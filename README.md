@@ -109,7 +109,7 @@ Figures are saved as both PNG (200 dpi) and PDF.
 If you find this work useful for your research on Erdős Problem #710 or related divisibility problems:
 
 ```
-S. W. Tolbert, "Computational and analytic approaches to the Erdős–Pomerance
+Steven Tolbert, "Computational and analytic approaches to the Erdős–Pomerance
 divisible injection problem," 2026. Available: https://github.com/stevenwtolbert/erdos-710-analysis
 ```
 
