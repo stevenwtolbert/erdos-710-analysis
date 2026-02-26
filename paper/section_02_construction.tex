@@ -1,0 +1,168 @@
+%% ===================================================================
+\section{The bipartite graph construction}\label{sec:construction}
+%% ===================================================================
+
+\subsection{Parameters}
+
+Fix $\eps > 0$ and define
+\begin{align}
+  C &= 2/\sqrt{e} \approx 1.2131, \label{eq:C-def} \\
+  L &= (C + \eps)\, n\sqrt{\ln n/\ln\ln n}, \label{eq:L-def2} \\
+  M &= L - n, \label{eq:M-def} \\
+  N &= \lfloor n/2 \rfloor, \label{eq:N-def} \\
+  \de(n) &= 2M/n - 1, \label{eq:delta-def} \\
+  B &= \lfloor\sqrt{n+L}\,\rfloor. \label{eq:B-def}
+\end{align}
+Here $L$ is the interval length, $M = |H|$ the number of targets,
+$N = |V|$ the pool size, $\de$ the minimum degree parameter,
+and $B$ the smoothness bound.
+The parameter $\de(n) = 2(C+\eps-1)\sqrt{\ln n/\ln\ln n} + O(1)$
+tends to infinity, but slowly: $\de(10{,}000) \approx 2.1$,
+$\de(50{,}000) \approx 2.4$, and $\de < 3$ for all $n < 10^7$.
+
+\subsection{The bipartite graph $G_n$}\label{subsec:graph-def}
+
+\begin{definition}\label{def:bipartite-graph}
+The \emph{Erd\H{o}s~710 bipartite graph} is $G_n = (V, H, E)$ where:
+\begin{itemize}
+\item $V = \{1, 2, \ldots, N\}$ (the ``source'' or ``pool'' vertices),
+\item $H = (2n,\; n+L] \cap \mathbb{Z}$ (the ``target'' vertices, $|H| = M$),
+\item $E = \{(k, h) : k \in V,\; h \in H,\; k \mid h\}$.
+\end{itemize}
+\end{definition}
+
+This graph arises from the $U/V$ decomposition of $\{1,\ldots,n\}$.
+
+\subsection{The $U/V$ decomposition}
+
+\begin{proposition}[Top half --- doubling map]\label{prop:doubling}
+The map $\varphi(k) = 2k$ is a divisible injection from
+$U = \{\ceil{n/2}+1,\ldots,n\}$ into $(n, 2n]$.
+\end{proposition}
+
+\begin{proof}
+For $k \in U$: $k > n/2$ implies $2k > n$; $k \leq n$ implies $2k \leq 2n$;
+$k \mid 2k$; distinct~$k$ give distinct~$2k$.
+\end{proof}
+
+Since the doubling map uses only targets in $(n, 2n]$, the bottom half~$V$
+must be matched into the remaining targets $H = (2n, n+L]$. By Hall's
+marriage theorem~\cite{Hall1935}, a perfect matching $V \to H$ exists if and
+only if $|\NH(S)| \geq |S|$ for every $S \subseteq V$.
+
+Thus the entire problem reduces to verifying Hall's condition in~$G_n$.
+
+\subsection{Degree structure}\label{subsec:degree}
+
+For $k \in V$ and $h \in H$, the divisibility condition $k \mid h$ means
+$h = jk$ for some integer~$j$. Since $h \in (2n, n+L]$, the multiplier
+$j = h/k$ satisfies $2n/k < j \leq (n+L)/k$.
+
+\begin{proposition}[Left degrees]\label{prop:left-degree}
+For $k \in V$:
+\[
+  \deg(k) = \floor{\frac{n+L}{k}} - \floor{\frac{2n}{k}}
+  = \frac{M}{k} + O(1).
+\]
+In particular, $\deg(k) \geq \floor{2M/n} \geq \de(n)$ for all $k \leq n/2$.
+\end{proposition}
+
+The degree function $d(k) = M/k + O(1)$ is monotonically decreasing in~$k$.
+Vertices near $k = 1$ have degree $\sim M$, while vertices near $k = N \approx n/2$
+have degree $\sim \de \approx 2$--$3$. This extreme heterogeneity is a
+central feature of the problem.
+
+\begin{proposition}[Codegrees]\label{prop:codegree}
+For distinct $k_1, k_2 \in V$:
+\begin{align*}
+  \deg(k_1, k_2) &:= |\{h \in H : k_1 \mid h \text{ and } k_2 \mid h\}| \\
+  &= \begin{cases}
+    M / \lcm(k_1, k_2) + O(1) & \text{if } \lcm(k_1, k_2) \leq n+L, \\
+    0 \text{ or } 1 & \text{if } \lcm(k_1, k_2) > n+L.
+  \end{cases}
+\end{align*}
+\end{proposition}
+
+The codegree equals $M \cdot \gcd(k_1, k_2) / (k_1 k_2) + O(1)$ when the lcm
+is small. For pairs of large elements near $N$, we have
+$\lcm(k_1, k_2) \approx k_1 k_2 / \gcd(k_1, k_2) \approx n^2 / (4 \gcd)$,
+which exceeds $n+L$ unless $\gcd \gg n / \sqrt{\log n}$. Thus \emph{most}
+pairs of large elements have codegree~$0$ or~$1$.
+
+\begin{proposition}[Right degrees]\label{prop:right-degree}
+For $h \in H$, the ``multiplicity'' or right-degree is
+\[
+  \tau_V(h) = |\{k \in V : k \mid h\}|.
+\]
+For $S \subseteq V$, we write $\tau_S(h) = |\{k \in S : k \mid h\}|$.
+\end{proposition}
+
+Right degrees vary enormously: highly composite targets (e.g., multiples of
+large primorials) have $\tau_V(h) > 100$, while prime or near-prime targets
+have $\tau_V(h) = 1$--$3$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_degree_distribution.pdf}
+\caption{Left degree $d(k)$ vs.\ normalized position $k/N$ for three
+  values of~$n$.  The degree drops from $\sim M$ at $k=1$ to
+  $\sim\delta \approx 2$--$3$ at $k = N$.}
+\label{fig:degree}
+\end{figure}
+
+\subsection{Restricted multiplier range}\label{subsec:restricted-mult}
+
+\begin{proposition}\label{prop:multiplier-range}
+If $k \in S \subseteq (M/(s+1),\, n/2]$ with $|S| = s$ divides $h \in H$,
+then the multiplier $j = h/k$ satisfies $5 \leq j < 2(s+1)$ for $n$
+sufficiently large.
+\end{proposition}
+
+\begin{proof}
+Lower bound: $j = h/k > 2n/(n/2) = 4$, so $j \geq 5$.
+Upper bound: $j = h/k < (n+L) / (M/(s+1)) = (n+L)(s+1)/M$.
+Since $(n+L)/M = 1 + n/M \to 1$, we get $j < 2(s+1)$ for large~$n$.
+\end{proof}
+
+This is a key structural fact: the number of divisors of~$h$ contributing to
+$\tau_S(h)$ is at most $|\{j \in \mathbb{Z} : 5 \leq j \leq 2(s+1)\}| = 2s-2$,
+which is much smaller than the full divisor function $\tau(h)$.
+
+\subsection{The Cauchy--Schwarz framework}\label{subsec:cs-framework}
+
+The Cauchy--Schwarz inequality gives the fundamental lower bound on
+neighborhood size:
+
+\begin{proposition}[CS lower bound]\label{prop:cs-bound}
+For any $S \subseteq V$:
+\begin{equation}\label{eq:cs-bound}
+  |\NH(S)| \;\geq\; \frac{E_1^2}{E_2},
+\end{equation}
+where $E_1 = \sum_{k \in S} \deg(k) = M\sigma + O(s)$ with
+$\sigma = \sum_{k \in S} 1/k$, and
+$E_2 = \sum_{h \in \NH(S)} \tau_S(h)^2$.
+\end{proposition}
+
+\begin{proof}
+By Cauchy--Schwarz: $E_1^2 = \bigl(\sum_h \tau_S(h)\bigr)^2
+\leq |\NH(S)| \cdot \sum_h \tau_S(h)^2 = |\NH(S)| \cdot E_2$.
+\end{proof}
+
+To prove Hall's condition $|\NH(S)| \geq s$, it suffices to show
+$E_1^2 / E_2 \geq s$, or equivalently $E_1^2 \geq s \cdot E_2$.
+
+\subsection{Case A: Small minimum element}
+
+\begin{proposition}[Case~A]\label{prop:case-a}
+If $S \subseteq V$ with $|S| = s$ and $\min(S) \leq M/(s+1)$, then
+$|\NH(S)| \geq s$.
+\end{proposition}
+
+\begin{proof}
+Let $a = \min(S)$. Then $\deg(a) \geq \floor{M/a} \geq M/(M/(s+1)) - 1
+= s+1-1 = s$.
+\end{proof}
+
+Case~A covers all subsets whose smallest element is ``small enough.''
+The remaining Case~B, where $\min(S) > M/(s+1)$, is where all the
+difficulty resides.

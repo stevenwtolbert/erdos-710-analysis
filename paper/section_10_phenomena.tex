@@ -1,0 +1,185 @@
+%% ===================================================================
+\section{Interesting phenomena}\label{sec:phenomena}
+%% ===================================================================
+
+Beyond the proof attempts, our computational investigation uncovered
+several striking phenomena that illuminate the structure of the
+Erd\H{o}s~710 bipartite graph.
+
+\subsection{Sawtooth oscillations}\label{subsec:sawtooth}
+
+\begin{observation}[Z65]\label{obs:sawtooth}
+The FMC sum $\Sigma(n) = \sum_{j=1}^{J(n)} 1/\alpha_j$ exhibits a
+\emph{sawtooth} pattern as a function of~$n$, with sharp drops at values
+of~$n$ where the number of dyadic intervals $J(n)$ increases by~$1$.
+\end{observation}
+
+This is perhaps the most visually striking phenomenon in the entire
+investigation, and it reveals the mechanism by which the problem
+``breathes'' as~$n$ grows.
+
+\paragraph{The mechanism.}
+Within a fixed $J$-regime (fixed number of dyadic intervals), the FMC
+sum rises steadily: as~$n$ increases, new smooth numbers enter the
+bottom interval, the codegree accumulates, and the expansion ratio
+$\alpha_j$ of the bottleneck interval slowly deteriorates.  Then,
+at a critical value of~$n$, the number of intervals jumps
+$J \to J + 1$: the hardest interval gets split in two, each with
+better degree homogeneity.  The FMC sum drops sharply---a
+``shockwave''---and the cycle begins again.
+
+The transitions are non-monotonic.  At some values of~$n$, $J$
+temporarily \emph{decreases} (an interval becomes empty as the
+smoothness bound~$B$ shifts), causing an upward shock:
+
+\begin{center}
+\begin{tabular}{@{}ccl@{}}
+\toprule
+$n$ & transition & direction \\
+\midrule
+140 & $J\!: 2 \to 3$ & $\uparrow$ new interval \\
+280 & $J\!: 4 \to 3$ & $\downarrow$ interval empties \\
+520 & $J\!: 3 \to 4$ & $\uparrow$ \\
+2{,}050 & $J\!: 4 \to 5$ & $\uparrow$ \\
+8{,}200 & $J\!: 5 \to 6$ & $\uparrow$ \\
+34{,}500 & $J\!: 6 \to 7$ & $\uparrow$ \\
+68{,}500 & $J\!: 7 \to 8$ & $\uparrow$ \\
+266{,}000 & $J\!: 8 \to 9$ & $\uparrow$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{The peak envelope.}
+The peak of each $J$-regime defines an envelope tracking the
+worst-case FMC sum:
+
+\begin{center}
+\begin{tabular}{@{}rcc@{}}
+\toprule
+$J$ & peak $n$ & peak $\Sigma$ \\
+\midrule
+4 & 520 & 0.793 \\
+5 & 2{,}050 & 0.850 \\
+6 & 8{,}200 & 0.831 \\
+7 & 34{,}500 & 0.857 \\
+8 & 68{,}500 & \textbf{0.881} \\
+9 & 266{,}000 & 0.871 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The global maximum over all 461~data points is $\Sigma = 0.881$
+at $n = 68{,}500$ (within the $J = 8$ regime), leaving an $11.9\%$
+margin to the threshold~$1$.  The envelope is \emph{non-monotonic}:
+$J = 6$ has a lower peak than $J = 5$, and $J = 9$ lower than $J = 8$.
+This irregular growth makes extrapolation to large~$n$ unreliable---we
+cannot determine whether the envelope eventually reaches~$1$ or
+stabilizes below it.
+
+\paragraph{The companion curves.}
+Figure~\ref{fig:sawtooth} shows two curves:
+$\sum 1/\CS_{\mathrm{ref},j}$ (the CS-based upper bound, blue) and
+$\sum 1/\alpha_j$ (the greedy expansion ratio, green).  The greedy
+curve tracks below the CS curve, confirming that the true expansion
+is better than CS predicts.  The bottom panel shows $\delta(n)$
+(orange, growing sublogarithmically) and $J(n)$ (purple, step function),
+revealing the $J$-transitions that drive the sawtooth.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_sawtooth.pdf}
+\caption{The FMC sawtooth.  \textbf{Top:} FMC sum
+  $\sum_j 1/\alpha_j$ (green) and $\sum_j 1/\CS_{\mathrm{ref},j}$
+  (blue) vs.~$n$ on a log scale, from 461~data points.
+  Sharp drops (``shockwaves'') occur at $J$-transitions where the
+  number of dyadic intervals changes.  The red dashed envelope tracks
+  the peaks, reaching a global max of $0.881$ at $n = 68{,}500$.
+  The green shaded region shows the $11.9\%$ margin to the
+  threshold~$1$.
+  \textbf{Bottom:} The minimum-degree parameter $\delta(n)$ (orange)
+  and the number of intervals $J(n)$ (purple step function).}
+\label{fig:sawtooth}
+\end{figure}
+
+\subsection{CS deficiency oscillation}\label{subsec:cs-oscillation}
+
+\begin{observation}[Z113b, Z114]\label{obs:cs-deficiency}
+The global Cauchy--Schwarz ratio $\CS(T_0)$ for the adversarial subset
+oscillates near~$1.0$ as $n$ increases, without converging in either
+direction.
+\end{observation}
+
+At $C_{\mathrm{mult}} = 1.00$ (the base constant), $\CS(T_0)$ crosses
+above~$1$ at some~$n$ values and below~$1$ at others.  The oscillation
+appears to be driven by the same sawtooth mechanism: the adversarial
+subset~$T_0$ restructures when the number of dyadic intervals changes.
+
+This non-monotonic behavior is one reason the variable-constant approach
+(Section~\ref{subsec:variable-cs}) fails: there is no smooth function
+$C_{\mathrm{crit}}(n) \to 1$ to track.
+
+\subsection{GCD stratum decomposition}\label{subsec:gcd-stratum}
+
+\begin{observation}\label{obs:gcd-stratum}
+The codegree sum (``off-diagonal'' part of~$E_2$) is dominated by
+pairs with moderate GCD: the stratum $\gcd(k_1, k_2) \in [11, 500]$
+accounts for $80$--$95\%$ of the truncated codegree sum, while coprime
+pairs ($\gcd = 1$) contribute only $0$--$2\%$.
+\end{observation}
+
+The concentration in moderate GCDs reflects the ``anatomy of smooth
+numbers'': elements of the adversarial set tend to share $2$--$3$ small
+prime factors (giving $\gcd \in [6, 500]$), which is enough to create
+codegree without making the lcm exceed the truncation threshold.
+
+Interestingly, the lcm truncation (excluding pairs with
+$\lcm(k_1, k_2) > n + L$) removes only $3$--$11\%$ of the codegree sum.
+The truncation is nearly invisible above $\gcd = 10$.
+
+\subsection{Far-partner stability}\label{subsec:far-partner}
+
+\begin{observation}\label{obs:far-partner}
+The ``far-partner fraction''---the fraction of vertices~$k$ whose
+codegree partner~$k'$ with $\lcm(k, k') > n + L$ contributes to
+the harmonic sum---stabilizes at $8$--$13\%$ and does \emph{not}
+decay to~$0$ with~$n$.
+\end{observation}
+
+This means that $\sim\!10\%$ of all vertices are ``forced far'' by the
+product constraint, creating a persistent structural contribution to the
+codegree.  The far-partner mechanism is driven by coprime elements
+($\gcd(k, k') = 1$) at opposite ends of the interval.
+
+\subsection{Shearer vs.\ CS dichotomy}\label{subsec:shearer-dichotomy}
+
+\begin{observation}[Initial attempt]\label{obs:shearer}
+Shearer's entropy method~\cite{ErdosSpencer1991} \emph{never fails} on
+the Erd\H{o}s~710 graph: the Shearer bound gives $|\NH(S)| \geq C |S|$
+with $C > 1$ at every tested~$n$ and every subset type.  Meanwhile,
+Cauchy--Schwarz fails on adversarial subsets.
+\end{observation}
+
+The Shearer bound used here is
+$|\NH(S)| \geq \bigl(\prod_{k \in S} \deg(k)\bigr)^{1/\Delta}$,
+where $\Delta = \max_{h \in \NH(S)} \tau_S(h)$ is the maximum
+right-degree.  Taking logarithms, this becomes
+$\log|\NH(S)| \geq (1/\Delta) \sum_{k \in S} \log \deg(k)$.
+This bound is stronger than CS when the multiplicity distribution
+is concentrated (many targets with $\tau = 1$--$2$), which is
+exactly the case for our graph.
+
+However, Shearer's bound cannot be made into a proof either: it requires
+\emph{computing} $H(\tau)$ for specific subsets, and no analytic estimate
+of $H(\tau)$ is tight enough.
+
+\subsection{LCM independent set margin}\label{subsec:lcm-margin}
+
+\begin{observation}[Z09]\label{obs:lcm-margin}
+The LCM independent set (vertices with pairwise $\lcm > n + L$) always
+covers at least $|V|$ targets, with the tightest margin being
+$|\NH(I_{\mathrm{LCM}})| / |I_{\mathrm{LCM}}| = 1.012$.
+\end{observation}
+
+This means that even after restricting to a maximal set of
+``non-overlapping'' vertices, the target count barely exceeds the
+vertex count.  The $1.2\%$ margin underscores the razor-thin expansion.

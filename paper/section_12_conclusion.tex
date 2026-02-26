@@ -1,0 +1,231 @@
+%% ===================================================================
+\section{Conclusion: where the snakes lie}\label{sec:conclusion}
+%% ===================================================================
+
+\subsection{The fundamental obstacle}
+
+The bipartite graph $G_n = (V, H, E)$ has a deceptively simple structure:
+edges are given by divisibility, degrees are $M/k + O(1)$, and the
+overall expansion ratio $|H|/|V| = M/N \to \infty$.  Yet proving
+Hall's condition $|\NH(S)| \geq |S|$ for \emph{all} $S \subseteq V$
+has resisted 43~analytic approaches.
+
+The root cause is a single structural fact:
+
+\begin{quote}
+\emph{For vertices~$k$ near $N \approx n/2$, the degree
+$d(k) \approx \de \approx 2$--$3$ is comparable to the maximum
+codegree $D_2 \approx \de$.  Thus $D/D_2 \not\to \infty$.}
+\end{quote}
+
+This means:
+\begin{itemize}
+\item \textbf{Probabilistic methods fail} because they require
+  $D / D_2 \to \infty$ (LLL, nibble, Janson all need degree to dominate
+  codegree).
+\item \textbf{Cauchy--Schwarz fails} because $E_2 \approx E_1^2 / |S|$
+  (the codegree sum is comparable to the ``budget,'' leaving no margin).
+\item \textbf{Spectral methods fail} because the graph is extremely
+  irregular (degree varies from~$\de$ to~$M$), destroying spectral
+  concentration.
+\item \textbf{Sieve methods fail} because divisibility events are
+  positively correlated, and the correlation structure is too complex
+  for Bonferroni truncation.
+\end{itemize}
+
+\subsection{Why the gap is at exactly $2/\sqrt{e}$}
+
+The current state of knowledge is:
+\[
+  \left(\frac{2}{\sqrt{e}} + o(1)\right) n\sqrt{\frac{\ln n}{\ln\ln n}}
+  \;\leq\; f(n)
+  \;\leq\; (1.7398\cdots + o(1))\, n\sqrt{\ln n}.
+\]
+The gap between lower and upper bounds is a factor of~$\sqrt{\ln\ln n}$.
+The constant $C = 2/\sqrt{e}$ in the lower bound arises from a precise
+balance.  The Erd\H{o}s--Pomerance argument shows that with
+$L = (C - \eps) n \sqrt{\ln n / \ln\ln n}$, there are too few multiples
+for the smooth numbers near~$N$ to be matched.  The parameter $\de = 2M/n - 1$ equals
+$(2C - 2 + o(1))\sqrt{\ln n / \ln\ln n}$, and at $C = 2/\sqrt{e}$ this
+gives $\de \sim 2(2/\sqrt{e} - 1)\sqrt{\ln n / \ln\ln n} \approx
+0.426\sqrt{\ln n / \ln\ln n}$.
+
+The growth rate $\sqrt{\ln n / \ln\ln n}$ is \emph{sublogarithmic}:
+slower than any power of $\log n$, let alone polynomial.  This means
+$\de(n)$ passes through the critical integer values $2, 3, 4, \ldots$
+at enormous values of~$n$:
+
+\begin{center}
+\begin{tabular}{@{}cc@{}}
+\toprule
+$\de \geq$ & approximate $n$ \\
+\midrule
+2 & $3{,}600$ \\
+3 & $2 \times 10^7$ \\
+4 & $5 \times 10^{14}$ \\
+5 & $\sim 10^{26}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Any proof that requires ``$\de$ large'' (say $\de \geq 10$) would need
+$n \gg 10^{100}$, far beyond computational verification.  The gap
+between what can be verified ($n \leq 10^6$, where $\de < 3$) and what
+can be proved asymptotically (requiring $\de \to \infty$) is a
+\emph{desert} of moderate~$n$ where neither tool reaches.
+
+\subsection{What a successful proof would need}
+
+Based on our investigation, a proof of the upper bound~\eqref{eq:upper-bound}
+would likely need one of:
+
+\begin{enumerate}
+\item \textbf{A new Hall certificate.}
+  Some combinatorial or algebraic structure in $G_n$ that certifies
+  $|\NH(S)| \geq |S|$ for all~$S$ simultaneously, without checking
+  subsets individually.  The FMC approach comes closest but requires
+  $\alpha(V_{\mathrm{rest}}) \geq 2$, which remains unproved.
+
+\item \textbf{A new counting technique.}
+  Something beyond Cauchy--Schwarz that controls the codegree sum
+  $E_2$ more tightly.  The weighted CS (Section~\ref{subsec:weighted-cs})
+  shows that the ``right'' weights exist and give margin~$\sim\!1.3$,
+  but no analytic expression for them is known.
+
+\item \textbf{A GCD graph argument.}
+  The Koukoulopoulos--Maynard framework
+  (Section~\ref{subsec:mult-energy}) is the most promising modern tool.
+  The adversarial set is multiplicatively unstructured at large~$n$,
+  which is the regime where the K--M expansion argument should work.
+  Making this quantitative for the specific Erd\H{o}s~710 graph is the
+  main open challenge.
+
+\item \textbf{A topological or algebraic argument.}
+  Hall's theorem is equivalent to the non-vanishing of a certain
+  permanent.  Techniques from algebraic combinatorics (e.g., the
+  Combinatorial Nullstellensatz) might certify this without subset
+  enumeration.
+\end{enumerate}
+
+\subsection{Open questions}
+
+\begin{enumerate}
+\item Is $\alpha(V_{\mathrm{rest}}) \geq 2$ for all $n$ sufficiently large?
+  (This would close the gap via the FMC theorem.)
+
+\item Does the optimal weighted CS ratio $d^\top C^{-1} d / |S|$ remain
+  bounded away from~$1$ as $n \to \infty$?  (It is $\sim\!1.3$ at all
+  tested~$n$.)
+
+\item Can the Koukoulopoulos--Maynard GCD graph technique be made
+  quantitative enough to prove Hall for $G_n$?
+
+\item Is there a ``forbidden subgraph'' characterization of the tight
+  sets of~$G_n$?
+
+\item Can the Shearer entropy bound be made analytic (i.e., can $H(\tau)$
+  be bounded from below for all subsets)?
+\end{enumerate}
+
+\subsection{Summary table of approaches}
+
+Table~\ref{tab:approaches} lists all 43~approaches investigated,
+organized by category, with a one-line failure reason for each.
+
+\begin{longtable}{@{}rlp{5.5cm}@{}}
+\caption{Summary of 43 approaches to proving global Hall's condition.}
+\label{tab:approaches} \\
+\toprule
+\# & Approach & Failure reason \\
+\midrule
+\endfirsthead
+\toprule
+\# & Approach & Failure reason \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\footnotesize\emph{continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+\multicolumn{3}{l}{\textbf{Cauchy--Schwarz family}} \\
+1 & Standard CS & Ratio 0.86 for adversarial $S$ \\
+2 & Per-interval CS & Works locally; 87--93\% overlap kills global \\
+3 & Weighted CS ($f = 1/\tau$) & Passes computationally; no analytic expression \\
+4 & Optimal weighted CS ($C^{-1}d$) & Passes computationally; $C^{-1}$ intractable \\
+5 & Filtered CS & Ratio 0.991 (threshold removes key targets) \\
+6 & Truncated CS (Ford cap) & Ratio 0.41--0.49 \\
+7 & Variable-constant CS & $C_{\mathrm{crit}} = 1.01$ stable, not $\to 1$ \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Matching \& fractional methods}} \\
+8 & Greedy matching & 112/220 failures; locally optimal $\neq$ globally \\
+9 & Uniform fractional & $\min w(k) = 0.06$; starves min-degree vertices \\
+10 & Nonuniform fractional (LP) & Exists but doesn't constitute proof for all $n$ \\
+11 & FMC with dyadic intervals & $\Sigma > 1$ for $n < 15$K (greedy) \\
+12 & FMC three-block & Blocked on $\alpha(S_+)$ proof \\
+13 & FMC $V_{\min}/V_{\mathrm{rest}}/S_-$ & Blocked on $\alpha(V_{\mathrm{rest}}) \geq 2$ \\
+14 & Sinkhorn iteration & 13--15\% fractional deficiency \\
+15 & CLP factoring & Graph not regular; truncation doesn't help \\
+16 & $\sqrt{2}$-partition sequential & Local condition passes; global guarantee fails \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Probabilistic methods}} \\
+17 & Symmetric LLL & $P \cdot e \cdot (D+1) \approx 10^4$ \\
+18 & Target-centered LLL & Same; high-$\tau$ targets cause failure \\
+19 & Janson inequality & $\Delta \gg (\sum P_i)^2$ \\
+20 & Erd\H{o}s--Spencer weighted LLL & Circular obstruction in $x_i$ system \\
+21 & Semi-random nibble (Z115) & 25--30\% of $|V|$ permanently unmatchable \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Sieve \& inclusion-exclusion}} \\
+22 & Bonferroni (order 2) & Waste ratio 2.4--9.2$\times$, grows with $n$ \\
+23 & Bonferroni (higher orders) & Signs diverge; no useful truncation \\
+24 & Product-formula sieve & Overestimates $|\NH(S)|$ (wrong direction) \\
+25 & Unique multiple sieve & 30--90\% of elements have $d_1 = 0$ \\
+26 & Standard sieve (Selberg/Brun) & 3.56$\times$ safety factor, wrong direction \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Graph-theoretic \& spectral}} \\
+27 & Spectral gap & Graph too irregular; $\sigma_2/\sigma_1$ large \\
+28 & Haxell independent transversal & Overlap 87--93\% makes conflict graph dense \\
+29 & Tur\'an bound & 27--32\% of target; gap grows with $n$ \\
+30 & Degeneracy bound & 10--28\% of target; degeneracy $\sim 15\sqrt{n}$ \\
+31 & Ford divisor cap & Ratio 0.41--0.49 \\
+32 & Multiplicative energy (K--M) & Qualitative but not quantitative for this graph \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Partition \& structural}} \\
+33 & Dyadic partition ($\times 2$) & 1--2 intervals fail degree condition \\
+34 & $\sqrt{2}$-partition & All pass but no global guarantee \\
+35 & Fine partition ($\times 1.1$) & All pass locally; same overlap problem \\
+36 & Stratified Hall (octile) & 7/8 pass; Q0 fails until subdivided \\
+37 & $V_{\min}$ disjointness & Works for $V_{\min}$; doesn't extend to $V_{\mathrm{rest}}$ \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Other}} \\
+38 & Derandomization & No efficient random process to derandomize \\
+39 & Modular remainder & Works for specific elements; doesn't generalize \\
+40 & Recursive doubling & Targets already claimed \\
+41 & Surplus-excess proof & Bonferroni waste kills it \\
+42 & Neumann series bound & Codegree matrix not contractive \\
+43 & Quasi-independence & Positive correlations in divisibility \\
+\end{longtable}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_approach_summary.pdf}
+\caption{Visual summary of all 43 approaches, organized by category.
+  Red: dead (fundamental obstruction).  Orange: partial success
+  (works locally or computationally).  Green: promising direction
+  (not yet quantitative).}
+\label{fig:summary}
+\end{figure}
+
+\subsection{Final words}
+
+Erd\H{o}s Problem~\#710 has resisted a determined assault with every
+tool in the modern combinatorialist's arsenal.  The computational
+evidence is overwhelming: Hall's condition holds with zero failures
+through $n = 10^6$, and no adversarial subset has ever been found with
+expansion ratio below~$1$.  The gap between what we can compute and
+what we can prove is a testament to the depth of the problem.
+
+We hope that this detailed investigation---documenting not just what works
+but, more importantly, what does \emph{not} work and \emph{why}---will
+save future researchers from repeating these dead ends and guide them
+toward the techniques most likely to succeed.

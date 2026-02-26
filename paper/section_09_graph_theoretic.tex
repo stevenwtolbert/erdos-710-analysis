@@ -1,0 +1,150 @@
+%% ===================================================================
+\section{Graph-theoretic and spectral methods}\label{sec:graph-theoretic}
+%% ===================================================================
+
+This section covers approaches based on the graph structure of~$G_n$
+or its associated conflict graph, rather than on direct counting arguments.
+
+\subsection{Spectral gap}\label{subsec:spectral}
+
+\paragraph{Method.}
+The expander mixing lemma: if $G_n$ has adjacency matrix with second
+singular value~$\sigma_2$ and largest singular value~$\sigma_1$,
+then for any $S \subseteq V$:
+\[
+  |\NH(S)| \;\geq\; \frac{|S| \cdot |H| \cdot \bar{d}^2}
+  {|S| \cdot \bar{d}^2 + \sigma_2^2 \cdot |H|},
+\]
+which exceeds~$|S|$ when $\sigma_2 / \sigma_1$ is small (i.e.,
+the graph is a good expander).
+
+\paragraph{Results.}
+The spectral gap $\sigma_2 / \sigma_1$ is too large.  The bipartite
+graph~$G_n$ is far from regular (degree varies from~$\de$ to~$M$),
+so the spectrum is dominated by the high-degree vertices.  The
+spectral bound gives $|\NH(S)| \geq C \cdot |S|$ only for
+$C \ll 1$---useless for Hall's condition.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Haxell's independent transversal theorem}\label{subsec:haxell}
+
+\paragraph{Method.}
+Haxell's theorem~\cite{Haxell1995}: if a bipartite graph $G = (A, B, E)$
+is partitioned into blocks $A = A_1 \cup \cdots \cup A_r$ and the
+``conflict graph'' on targets has maximum degree~$\Delta$, then a
+system of distinct representatives exists provided
+$|A_i| \geq 2\Delta$ for all~$i$.
+
+\paragraph{Results.}
+The conflict graph on~$H$ (where two targets are adjacent if they share
+a source) has high maximum degree because highly composite targets
+are connected to many others.  The condition $|A_i| \geq 2\Delta$ fails
+for the bottom intervals where $|A_i|$ is small and $\Delta$ is large.
+The cross-interval overlap of 87--93\% means the conflict graph is nearly
+complete.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Tur\'an / maximum weighted independent set}\label{subsec:turan}
+
+\paragraph{Method.}
+Hall's condition can be rephrased via the LCM conflict graph:
+$k_1 \sim k_2$ if $\lcm(k_1, k_2) \leq n + L$ (i.e., they share a
+target).  A maximum weighted independent set (MWIS) of size~$\geq s$
+in $G_n[S]$ gives disjoint neighborhoods, implying $|\NH(S)| \geq s$.
+
+The Tur\'an bound gives $\alpha(G) \geq |V|^2 / (|V| + 2|E|)$.
+
+\paragraph{Results.}
+The Tur\'an bound gives only 27--32\% of~$|S|$, and the ratio
+\emph{decreases} with~$n$:
+
+\begin{center}
+\begin{tabular}{@{}rcc@{}}
+\toprule
+$n$ & Tur\'an / $|S|$ & Greedy IS / $|S|$ \\
+\midrule
+500 & 0.324 & 0.302 \\
+1{,}000 & 0.308 & 0.304 \\
+5{,}000 & 0.279 & 0.300 \\
+10{,}000 & 0.269 & 0.298 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The greedy independent set is $10$--$27\times$ larger than the Tur\'an
+bound, and this gap \emph{grows} with~$n$.  Generic graph bounds cannot
+capture the arithmetic structure that makes the actual independent set large.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Degeneracy}\label{subsec:degeneracy}
+
+\paragraph{Method.}
+The degeneracy~$d$ of the conflict graph gives a coloring bound
+$\chi \leq d + 1$, and hence $\alpha \geq |V| / (d + 1)$.
+
+\paragraph{Results.}
+Degeneracy grows as $\sim\!15\sqrt{n}$:
+
+\begin{center}
+\begin{tabular}{@{}rcc@{}}
+\toprule
+$n$ & degeneracy & $|V| / (d+1)$ as fraction of target \\
+\midrule
+500 & 31 & 28\% \\
+1{,}000 & 46 & 22\% \\
+5{,}000 & 105 & 14\% \\
+10{,}000 & 151 & 10\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The degeneracy bound gives only 10--28\% of what is needed, and the
+fraction \emph{decreases} with~$n$.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Ford divisor cap}\label{subsec:ford-cap}
+
+\paragraph{Method.}
+Apply Ford's theorem~\cite{Ford2008} on the distribution of integers
+with a divisor in a given interval to bound the number of ``medium''
+divisors of targets in~$H$.
+
+\paragraph{Results.}
+The Ford divisor cap restricts $\tau_S(h)$ to the range
+$[h^{1/u}, h^{1-1/u}]$, giving bounds of $0.41$--$0.49$ on the
+truncated CS ratio.
+
+\paragraph{Verdict: DEAD.}  Ratio $< 0.5$.
+
+\subsection{Multiplicative energy (Koukoulopoulos--Maynard)}\label{subsec:mult-energy}
+
+\paragraph{Method (Z44).}
+The Koukoulopoulos--Maynard GCD graph technique~\cite{KoukoulopoulosMaynard2020}
+decomposes sets into ``structured'' (high multiplicative energy) and
+``unstructured'' (low energy) parts.  The structured part can be handled
+by density-increment arguments, and the unstructured part has good expansion.
+
+\paragraph{Results.}
+The adversarial set~$T$ has multiplicative energy $E_{\mathrm{mult}} / |T|^2
+\in [2.0, 7.8]$, which is mildly structured at small~$n$ but collapses to
+the trivial diagonal contribution ($\approx 2.0$) at $n = 50{,}000$.
+The adversary becomes multiplicatively \emph{independent} at large~$n$:
+it lives in the ``unstructured regime'' where the K--M expansion argument
+should work.
+
+\paragraph{Why it doesn't close the gap.}
+The K--M framework gives qualitative expansion ($|\NH(S)| \geq
+(1 + c)|S|$ for some $c > 0$), but the constant~$c$ depends on the
+specific GCD graph parameters and has not been made explicit enough to
+verify $c > 0$ for the Erd\H{o}s~710 graph.  Moreover, the framework
+was designed for the Duffin--Schaeffer conjecture, where the bipartite
+graph is denser and more regular than ours.
+
+\paragraph{Verdict:} Promising direction but not yet converted to a
+proof.  The multiplicative energy analysis shows the adversary is
+\emph{not} exploiting product structure---its power comes from the
+``diffuse, low-degree'' nature of the graph, which is harder to handle.

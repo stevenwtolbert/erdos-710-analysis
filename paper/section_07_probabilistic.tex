@@ -1,0 +1,154 @@
+%% ===================================================================
+\section{Probabilistic methods}\label{sec:probabilistic}
+%% ===================================================================
+
+Probabilistic existence arguments are among the most powerful tools
+in combinatorics.  We tried five probabilistic approaches; all fail
+because the bipartite graph~$G_n$ has $D \approx D_2$ (degree~$\approx$
+maximum codegree for the hard vertices), precisely the regime where
+these methods lose power.
+
+\subsection{Symmetric Lov\'asz Local Lemma}\label{subsec:symmetric-lll}
+
+\paragraph{Method.}
+Random matching: each $k \in V$ picks $\varphi(k)$ uniformly from its
+$\deg(k)$ multiples in~$H$.  The bad event $B_k$ is a collision
+($\varphi(k) = \varphi(k')$ for some $k' \neq k$).  The symmetric
+LLL~\cite{ErdosSpencer1991} asserts that if $\Pr[B_k] \cdot e \cdot
+(d_k + 1) \leq 1$ for all~$k$, where $d_k$ is the number of other
+bad events sharing a target with~$B_k$, then a proper injection exists
+with positive probability.
+
+\paragraph{Results.}
+The symmetric LLL works in only 4 out of 108 tested configurations
+(all trivial: top-packed subsets at $s/N = 0.1$).
+
+\begin{center}
+\begin{tabular}{@{}rccc@{}}
+\toprule
+$n$ & $\max \Pr[B_k]$ & $\max d_k$ & $\max$ LLL value \\
+\midrule
+500 & 1.83 & 224 & 540 \\
+1{,}000 & --- & --- & $>1{,}000$ \\
+2{,}000 & 2.13 & 868 & 2{,}091 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Why it fails.}
+Three compounding problems:
+(i)~$\Pr[B_k] > 1$ is not meaningful (collision is near-certain under
+uniform random matching for hard elements);
+(ii)~the dependency degree $d_k \approx s$ for small elements like
+$k = 6, 12$ (they share multiples with essentially every other element);
+(iii)~the product $\Pr[B_k] \cdot d_k$ \emph{grows} with~$n$.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Target-centered LLL}\label{subsec:target-lll}
+
+\paragraph{Method.}
+Define bad events on targets instead: $B_h = \{|\{k : \varphi(k) = h\}|
+\geq 2\}$ (target~$h$ receives two or more elements).  The dependency
+graph is sparser (each $B_h$ depends only on $B_{h'}$ where $h$ and $h'$
+share a source).
+
+\paragraph{Results.}
+The target-centered formulation has $\Pr[B_h] \leq 1 - (1 - 1/\bar{d})^{\tau(h)}$
+$\approx \tau(h)/\bar{d}$, and the dependency degree is $d_h \leq
+\sum_{k:\,k \mid h} (\deg(k) - 1)$.  For highly composite targets
+($\tau(h) > 50$), we get $\Pr[B_h] \approx 1$, and the LLL condition
+$\Pr[B_h] \cdot e \cdot (d_h + 1) \leq 1$ fails catastrophically.
+
+\paragraph{Feasibility check (Z113a).}
+$P \cdot e \cdot (D + 1) \approx 10^4$ at $n = 50{,}000$---four orders of
+magnitude above the threshold.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Janson's inequality}\label{subsec:janson}
+
+\paragraph{Method.}
+Janson's inequality~\cite{Janson1998} gives a bound on the probability
+that a random subset avoids all ``bad configurations.''  Applied to our
+setting with random target assignment, the Janson bound requires
+the sum of pairwise dependencies $\Delta = \sum_{(B_i, B_j) \text{ dep.}}
+\Pr[B_i \wedge B_j]$ to be small relative to $(\sum \Pr[B_i])^2$.
+
+\paragraph{Results.}
+$\Delta \gg (\sum \Pr[B_i])^2$ because the codegree structure is too
+dense.  For vertices near~$N$ with $\deg \approx \de \approx 3$,
+every pair of targets of~$k$ is shared with other vertices, making
+the joint probabilities comparable to the marginal probabilities.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Erd\H{o}s--Spencer weighted LLL}\label{subsec:erdos-spencer}
+
+\paragraph{Method.}
+The Erd\H{o}s--Spencer~\cite{ErdosSpencer1991} version of the LLL allows
+non-uniform probabilities: assign $x_i \in (0, 1)$ to each bad event
+$B_i$ such that $\Pr[B_i] \leq x_i \prod_{j \sim i} (1 - x_j)$.
+
+\paragraph{Results.}
+The optimal $x_i$ must satisfy a system of $|V|$ nonlinear inequalities.
+For our graph, the system is infeasible: the high-codegree vertices
+force $x_i \to 1$, which makes $\prod (1 - x_j) \to 0$, creating a
+circular obstruction.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Semi-random nibble}\label{subsec:nibble}
+
+\paragraph{Method (Z115).}
+R\"odl nibble / semi-random process~\cite{Rodl1985,MolloyReed2002}:
+each round, every unmatched vertex picks a random available target;
+if a target is picked by exactly one vertex, match them.  Repeat
+for 500~rounds.  Run HK on the residual graph to check matchability.
+
+\paragraph{Results.}
+
+\begin{center}
+\begin{tabular}{@{}rccc@{}}
+\toprule
+$n$ & avg.\ residual \% & HK on residual & unmatchable / $|V|$ \\
+\midrule
+1{,}000 & 52.2\% & FAILS & 29.7\% \\
+5{,}000 & 43.3\% & FAILS & --- \\
+10{,}000 & 38.7\% & FAILS & 29.4\% \\
+20{,}000 & 34.4\% & FAILS & --- \\
+30{,}000 & 32.3\% & FAILS & 24.8\% \\
+50{,}000 & 29.5\% & (not tested) & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Why it fails.}
+The nibble matches $\sim\!65$--$70\%$ of vertices, but the remaining
+$30$--$35\%$ include $\sim\!25\%$ of~$|V|$ that are \emph{genuinely
+unmatchable} in the residual graph.  HK fails on every residual at every~$n$
+and every random seed (variance across seeds is $\pm 1$--$2\%$---the failure
+is structural, not bad luck).
+
+\paragraph{Theoretical diagnosis.}
+The R\"odl nibble theory requires $D / D_2 \to \infty$ (degree~$\gg$
+max codegree).  For our graph, $D \approx D_2 \approx \de$ for the
+hard vertices near~$N$.  The theory correctly predicts failure.
+
+When a hard vertex~$k_1$ ($\deg \approx 3$--$5$) randomly claims
+target~$h$, other hard vertices~$k_2$ that also needed~$h$ (as one of
+their few options) permanently lose a critical target.  After enough
+rounds, many vertices have lost \emph{all} viable targets.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_nibble_residual.pdf}
+\caption{Semi-random nibble results.  The residual fraction (blue)
+  shrinks with~$n$, but the permanently unmatchable fraction (red)
+  remains at $25$--$30\%$ of~$|V|$.  HK fails on every residual
+  at every~$n$ tested.}
+\label{fig:nibble}
+\end{figure}
+
+\paragraph{Verdict: DEAD.}
+This is approach \#43 on the dead list.

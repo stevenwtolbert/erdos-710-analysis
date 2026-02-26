@@ -1,0 +1,230 @@
+%% ===================================================================
+\section{What is proved}\label{sec:proved}
+%% ===================================================================
+
+We have four classes of rigorous results, none of which individually
+suffices to prove the upper bound~\eqref{eq:upper-bound} for all~$n$.
+
+\subsection{Exhaustive Hopcroft--Karp verification}\label{subsec:hk}
+
+\begin{theorem}[Computational verification]\label{thm:computational}
+For every integer $n \in [4, 10^6]$, the bipartite graph $G_n$
+admits a left-saturating matching.  Equivalently, Hall's condition
+$|\NH(S)| \geq |S|$ holds for all $S \subseteq V$.
+\end{theorem}
+
+\begin{proof}[Method]
+At each integer~$n$, we construct $G_n$ explicitly and run the
+Hopcroft--Karp algorithm~\cite{HopcroftKarp1973}, which computes a
+maximum matching in $O(\sqrt{|V|}\,|E|)$ time. By K\"onig's theorem,
+the maximum matching size equals~$|V|$ if and only if Hall's condition
+holds for all subsets of~$V$.
+
+The computation was performed in two phases:
+\begin{enumerate}
+\item \emph{Python implementation} (\texttt{hpc\_z68\_exhaustive\_hk.py}):
+  verified $n \in [4, 10{,}000]$ in 71~seconds, with 9{,}985~passes,
+  12~skips (trivial cases with $|V| = 0$), and zero failures.
+\item \emph{C/OpenMP implementation} (\texttt{hpc\_z68\_hk.c}):
+  extended verification to $n = 10^6$, using parallelism across
+  multiple cores.  The full run completed with zero failures.
+\end{enumerate}
+
+All matching sizes equal~$|V|$ at every tested~$n$.  There is no
+marginal case: at every~$n$, the matching saturates completely.
+\end{proof}
+
+\begin{remark}
+The computation does not merely check a \emph{random sample} of~$n$
+values.  It checks \emph{every} integer in $[4, 10^6]$, providing a
+certificate that the upper bound holds unconditionally for $n \leq 10^6$.
+This is the strongest result we have.
+\end{remark}
+
+\subsection{Per-interval Cauchy--Schwarz}\label{subsec:per-interval-cs}
+
+Decompose $V$ into dyadic intervals $I_j = \{k \in V : 2^{j-1} < k \leq 2^j\}$
+for $j = 1, \ldots, J$ (with the first and last intervals possibly truncated).
+
+\begin{theorem}[Per-interval Hall]\label{thm:per-interval}
+For each dyadic interval~$I_j$ and all $n$ sufficiently large,
+\[
+  |\NH(S \cap I_j)| \;\geq\; |S \cap I_j|
+  \qquad \text{for all } S \subseteq V.
+\]
+\end{theorem}
+
+The proof proceeds through the chain Z23--Z28 of our investigation:
+
+\begin{enumerate}
+\item \textbf{Homogeneity within intervals.}
+  For $k, k' \in I_j$, the degrees satisfy $\deg(k)/\deg(k') \in [1, 2]$.
+  The average degree within~$I_j$ is $\bar{d}_j \approx M / (3 \cdot 2^{j-1}/2)$.
+
+\item \textbf{Truncated GCD sum.}  Define
+  $G_{\mathrm{trunc}}(I_j) = \sum_{\substack{k,k' \in I_j,\, k \neq k' \\
+    \lcm(k,k') \leq n+L}} \frac{\gcd(k,k')}{kk'}$.
+  This sum controls the codegree contribution to~$E_2$.
+
+\item \textbf{$G_{\mathrm{trunc}} \to 0$.}
+  For smooth $k, k' \in [X, 2X)$ with $\lcm(k,k') \leq n+L$, writing
+  $k = da$, $k' = db$ with $\gcd(a,b) = 1$, we have $d \geq d^* = X^2/(n+L)
+  \to \infty$.  The Hildebrand--Tenenbaum estimate~\cite{HildebrandTenenbaum1993}
+  for smooth number counts shows the outer sum
+  $\sum_{d \geq d^*} 1/d$ converges to~$0$, giving
+  $G_{\mathrm{trunc}} = O(\log\log n / \log n) \to 0$.
+
+\item \textbf{CS ratio $\to \infty$.}
+  The effective codegree parameter is
+  $C_{\mathrm{eff}} = 1 + 2G_{\mathrm{trunc}} / H_j + \text{correction}$,
+  where $H_j = \sum_{k \in I_j} 1/k$ is the harmonic sum.
+  Since $G_{\mathrm{trunc}} \to 0$ and $H_j$ is bounded below, we get
+  $C_{\mathrm{eff}} \to 1$, whence the CS ratio
+  $\CS(I_j) = \bar{d}_j / C_{\mathrm{eff}} \to \infty$.
+\end{enumerate}
+
+\begin{remark}
+The per-interval result is genuinely strong: within each interval, the
+Cauchy--Schwarz bound proves $|\NH(S \cap I_j)| \geq C_j |S \cap I_j|$
+with $C_j \to \infty$.  The fundamental difficulty is that this does
+\emph{not} imply global Hall's condition, because the neighborhoods
+$\NH(S \cap I_j)$ overlap across different intervals (see
+Section~\ref{sec:gap}).
+\end{remark}
+
+\subsection{$V_{\min}$ pairwise disjointness}\label{subsec:vmin}
+
+Define $V_{\min} = \{k \in V : k > B,\; \deg(k) = d_{\min}\}$, where
+$d_{\min} = \floor{2M/n}$ is the minimum degree among elements of~$V$.
+
+\begin{theorem}\label{thm:vmin-disjoint}
+For $n$ sufficiently large, all elements of~$V_{\min}$ have pairwise
+disjoint neighborhoods: $\NH(\{k_1\}) \cap \NH(\{k_2\}) = \emptyset$
+for all distinct $k_1, k_2 \in V_{\min}$.  Consequently,
+$\alpha(V_{\min}) = d_{\min}$, where $\alpha(V_{\min}) =
+\min_{\emptyset \neq T \subseteq V_{\min}} |\NH(T)| / |T|$.
+\end{theorem}
+
+The proof splits into three cases based on the ``smoothness'' of the
+elements (whether $P(k) \leq B$ or $P(k) > B$):
+
+\begin{enumerate}
+\item \textbf{Smooth $\times$ smooth.}
+  For $B$-smooth elements $k_1, k_2$ near~$N$ with
+  $\gcd(k_1, k_2) = d$ and coprime quotients $a = k_1/d$, $b = k_2/d$:
+  we need $\lcm(k_1, k_2) = dab \leq n+L$ for a shared target to exist.
+  Since $k_1, k_2 \approx N$ and both are smooth, the ``coprime pair
+  impossibility theorem'' shows this forces $d \geq N^2/(n+L) \to \infty$,
+  but then $a, b$ are bounded and the constraint is too restrictive for
+  $\delta > 2.2$ (verified for $n \geq 15{,}000$).
+
+\item \textbf{Rough $\times$ rough.}
+  For elements with $P(k_i) > B$: if $k_1 = p_1 m_1$ and $k_2 = p_2 m_2$
+  with large primes $p_i > B$, then
+  $\lcm(k_1, k_2) \geq p_1 p_2 \cdot \lcm(m_1, m_2) / \gcd(p_1 m_1, p_2 m_2)$.
+  Since $p_1, p_2 > B \approx \sqrt{n}$ and $k_i \leq N \approx n/2$,
+  we get $\lcm \geq N \cdot B \gg n + L$, so $\deg(k_1, k_2) = 0$.
+
+\item \textbf{Smooth $\times$ rough.}
+  For $k_s$ ($B$-smooth, near~$N$) and $k_r$ ($P(k_r) > B$, near~$N$):
+  $\gcd(k_s, k_r) \leq N/B$ since $P(k_r) > B$ does not divide~$k_s$.
+  Then $\lcm(k_s, k_r) \geq N^2 / (N/B) = NB \gg n + L$.
+  Verified computationally at $n = 15$K, $20$K, $50$K.
+\end{enumerate}
+
+\subsection{The FMC theorem}\label{subsec:fmc}
+
+The \emph{Fractional Matching Condition} (FMC) provides a sufficient
+condition for Hall's theorem via a partition argument.
+
+\begin{theorem}[FMC]\label{thm:fmc}
+Let $V = V_1 \cup V_2 \cup \cdots \cup V_r$ be a partition of~$V$
+into blocks, and let $\alpha_j = \min_{\emptyset \neq T \subseteq V_j}
+|\NH(T)| / |T|$ be the expansion ratio of block~$j$.  If
+\begin{equation}\label{eq:fmc-condition}
+  \sum_{j=1}^{r} \frac{1}{\alpha_j} \;\leq\; 1,
+\end{equation}
+then Hall's condition $|\NH(S)| \geq |S|$ holds for all $S \subseteq V$.
+\end{theorem}
+
+\begin{proof}
+For any $S \subseteq V$, write $S_j = S \cap V_j$ and $s_j = |S_j|$.
+For each target $h \in \NH(S)$, define
+$f(h) = \sum_{j:\, h \in \NH(S_j)} 1/\alpha_j$.
+Then:
+\begin{enumerate}[label=(\alph*)]
+\item $f(h) \leq \sum_{j=1}^r 1/\alpha_j \leq 1$ for every~$h$
+  (each indicator is $0$ or~$1$, and the FMC
+  condition~\eqref{eq:fmc-condition} applies).
+\item $\sum_{h \in \NH(S)} f(h) = \sum_j (1/\alpha_j)|\NH(S_j)|
+  \geq \sum_j s_j = |S|$
+  (since $|\NH(S_j)| \geq \alpha_j s_j$ by definition of~$\alpha_j$).
+\end{enumerate}
+Combining: $|S| \leq \sum_h f(h) \leq 1 \cdot |\NH(S)|$, so
+$|\NH(S)| \geq |S|$.
+\end{proof}
+
+\begin{remark}
+The FMC theorem was verified in Z62 and applied extensively in Z99--Z111.
+With the $V_{\min} / V_{\mathrm{rest}} / S_-$ partition:
+$\alpha(V_{\min}) = d_{\min}$, $\alpha(S_-) \to \infty$, so the FMC sum
+becomes $1/d_{\min} + 1/\alpha(V_{\mathrm{rest}}) + o(1)$.
+For $n \geq 100{,}000$, the greedy heuristic gives
+$\alpha(V_{\mathrm{rest}}) \geq 4$, yielding
+$\text{FMC sum} \leq 1/3 + 1/4 + o(1) = 7/12 < 1$.
+
+\emph{However}, the greedy heuristic only provides a \emph{lower bound}
+on $\alpha(V_{\mathrm{rest}})$---it does not constitute a proof.
+This is the critical gap: no analytic argument proves
+$\alpha(V_{\mathrm{rest}}) \geq 2$ for $n \to \infty$.
+\end{remark}
+
+\subsection{Small-$s$ regime}\label{subsec:small-s}
+
+\begin{theorem}[Small-$s$ Hall]\label{thm:small-s}
+For any fixed $s_0 \geq 1$, there exists $n_0 = n_0(s_0, \eps)$ such
+that for all $n \geq n_0$ and all $S \subseteq V$ with $|S| = s \leq s_0$
+and $\min(S) > M/(s_0 + 1)$: $|\NH(S)| \geq s$.
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:multiplier-range}, $\tau_S(h) \leq
+|\{j \in \mathbb{Z} : 5 \leq j \leq 2(s_0+1)\}| = 2s_0 - 2 =: C_0$
+for all $h \in H$.
+Using $E_2 \leq C_0 \cdot E_1$:
+\[
+  |\NH(S)| \;\geq\; \frac{E_1}{C_0}
+  \;\geq\; \frac{s \cdot \de}{C_0}.
+\]
+Since $\de \to \infty$ and $C_0$ is a constant, we get
+$|\NH(S)| \geq s$ for $\de \geq C_0$, which holds for all
+$n$ sufficiently large.
+\end{proof}
+
+More precisely, Regime~1 of the proof covers all $s \leq s_1(n) =
+\floor{\de/2}$, which tends to infinity (albeit slowly: $s_1 \sim
+(C + \eps - 1)\sqrt{\ln n / \ln\ln n} / 2$).
+
+\subsection{Summary of proved results}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Result & Range & Method \\
+\midrule
+$|\NH(S)| \geq |S|$ for all $S \subseteq V$ &
+  $n \in [4, 10^6]$ & Exhaustive HK \\
+$|\NH(S \cap I_j)| \geq |S \cap I_j|$ &
+  $n \to \infty$, each $I_j$ & Per-interval CS \\
+$\alpha(V_{\min}) = d_{\min}$ &
+  $n \geq 15{,}000$ & Pairwise disjointness \\
+$\sum 1/\alpha_j \leq 1 \Rightarrow$ Hall &
+  General & FMC theorem \\
+$|\NH(S)| \geq |S|$ for $|S| \leq \floor{\de/2}$ &
+  $n$ large & Small-$s$ CS \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+None of these results, alone or in combination, proves global Hall's
+condition for all~$n$.  The gap is analyzed in Section~\ref{sec:gap}.

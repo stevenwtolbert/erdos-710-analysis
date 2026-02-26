@@ -1,0 +1,172 @@
+%% ===================================================================
+\section{The Cauchy--Schwarz family}\label{sec:cs-family}
+%% ===================================================================
+
+The Cauchy--Schwarz inequality is the most natural tool for bounding
+neighborhood sizes in bipartite graphs.  We tried six variants,
+each addressing a different weakness of the standard bound.  All fail
+to prove global Hall, though each illuminates a different aspect of the
+problem.
+
+\subsection{Standard Cauchy--Schwarz}\label{subsec:standard-cs}
+
+The standard bound (Proposition~\ref{prop:cs-bound}) gives
+$|\NH(S)| \geq E_1^2 / E_2$.  The condition $E_1^2 / (|S| \cdot E_2)
+\geq 1$ is equivalent to requiring that the average squared multiplicity
+$\overline{\tau^2} := E_2 / |\NH(S)|$ does not exceed $\bar{d}^2 / s$,
+where $\bar{d} = E_1 / s$ is the average degree.
+
+\paragraph{Why it fails.}
+For adversarial subsets~$S$ in Case~B (with $\min(S) > M/(s+1)$),
+the codegree sum $E_2$ includes cross-terms from pairs with small lcm.
+The truncated GCD sum $G_{\mathrm{trunc}} = \sum_{k \neq k'} \gcd(k,k') /
+(kk')$ contributes an $O(1)$ factor that makes $E_1^2 / (s \cdot E_2) < 1$
+for $s/N \geq 0.4$.
+
+\begin{center}
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+$n$ & $s/N = 0.5$ (HC-adv) & $s/N = 0.7$ & $s/N = 0.9$ & Worst \\
+\midrule
+500 & 1.19 & 1.06 & 0.92 & 0.92 \\
+1{,}000 & --- & --- & 0.91 & 0.91 \\
+2{,}000 & 1.21 & --- & 0.91 & 0.84 \\
+3{,}000 & 1.07 & --- & 0.96 & 0.86 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The CS failure band (where $\CS < 1$) spans $s/N \in [0.29, 0.92]$
+at $n = 3{,}000$ and \emph{grows} with~$n$.  The deepest failure
+is at $s/N \approx 0.45$--$0.49$, reaching $\CS \approx 0.86$.
+
+\paragraph{Verdict: DEAD.}
+Standard CS cannot prove global Hall for large~$n$.
+
+\subsection{Per-interval Cauchy--Schwarz}\label{subsec:per-interval-cs-detail}
+
+As described in Section~\ref{subsec:per-interval-cs}, restricting
+to a single dyadic interval $I_j$ makes $G_{\mathrm{trunc}} \to 0$
+and hence $\CS(I_j) \to \infty$.  This \emph{works} within each interval.
+
+\paragraph{Why it doesn't globalize.}
+The neighborhoods $\NH(S \cap I_j)$ overlap by 87--93\% across intervals
+(Section~\ref{subsec:overlap}).  Summing $\sum_j |\NH(S \cap I_j)|
+\geq \sum_j |S \cap I_j| = |S|$ is useless because the left side
+double-counts.
+
+\paragraph{Verdict:} Proves per-interval Hall; useless for global Hall.
+
+\subsection{Weighted Cauchy--Schwarz}\label{subsec:weighted-cs}
+
+The generalized CS bound allows an arbitrary weight function $f\colon V \to
+\mathbb{R}_{>0}$:
+\[
+  |\NH(S)| \;\geq\; \frac{\bigl(\sum_{k \in S} f(k) \deg(k)\bigr)^2}
+  {\sum_{h} \bigl(\sum_{k \in S:\, k \mid h} f(k)\bigr)^2}
+  \;=\; \frac{(d^\top f)^2}{f^\top C f},
+\]
+where $C$ is the codegree matrix.  The optimal weight is
+$f^* = C^{-1} d$, giving $|\NH(S)| \geq d^\top C^{-1} d$.
+
+\paragraph{Computational results (Z43).}
+The optimal weighted CS ratio $d^\top C^{-1} d / |S|$ is remarkably
+stable at $1.29$--$1.33$ across all tested adversarial subsets and
+all~$n$ up to $50{,}000$.  Several explicit weight functions also work:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Weight $f(k)$ & Ratio at $n = 10{,}000$ & Status \\
+\midrule
+$f = 1$ (standard) & 0.85 & FAILS \\
+$f = \deg(k)$ & 0.72 & FAILS \\
+$f = 1/\bar{\tau}(k)$ & 1.05 & passes \\
+$f = 1/\sqrt{C_{kk}}$ & 1.16 & passes \\
+$f = 1/\bar{\mu}(k)$ & 1.20 & passes \\
+$f = C^{-1}d$ (optimal) & 1.31 & passes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The ``anti-codegree'' weights (downweighting heavily-shared elements)
+consistently work.
+
+\paragraph{Why it fails as a proof.}
+To convert this into a proof, one would need an \emph{analytic} expression
+for $f^*$ or a provable lower bound on $d^\top C^{-1} d$.  The matrix~$C$
+is a dense, $|S| \times |S|$ matrix whose entries depend on the
+number-theoretic structure of divisibility.  We found no way to bound
+$d^\top C^{-1} d \geq |S|$ analytically.  The condition number of~$C$
+grows from $8{,}000$ to $574{,}000$, and the optimal weights exhibit
+complex, irregular patterns that defy closed-form description.
+
+\paragraph{Verdict: DEAD} as a proof technique, but computationally
+the optimal CS passes at every~$n$ tested.
+
+\subsection{Filtered Cauchy--Schwarz}\label{subsec:filtered-cs}
+
+\paragraph{Idea.}
+Exclude high-codegree targets from the CS sum.  Define $H' = \{h \in H :
+\tau_S(h) \leq \tau_0\}$ for a threshold~$\tau_0$.  Then
+$|\NH(S)| \geq |H'|$ trivially, and the CS bound on~$H'$ has smaller~$E_2$.
+
+\paragraph{Computational results (Z112k).}
+Even with optimal threshold selection, the filtered CS ratio peaks
+at~$\sim\!0.991$ for adversarial subsets---still below~$1$.
+The problem is that filtering removes the very targets that contribute
+most to $E_1$, and the improvement in~$E_2$ does not compensate.
+
+\paragraph{Verdict: DEAD.} Ratio $\sim\!0.991 < 1$.
+
+\subsection{Truncated Cauchy--Schwarz}\label{subsec:truncated-cs}
+
+\paragraph{Idea.}
+Restrict to the Ford divisor cap: only count divisors $d$ of~$h$ in
+the range $[h^{1/u}, h^{1-1/u}]$ (the ``medium'' divisors),
+applying Ford's theorem~\cite{Ford2008} on the concentration of divisors.
+
+\paragraph{Computational results.}
+The truncated codegree sum is smaller, but the edge count also drops.
+The ratio lands at $0.41$--$0.49$---far from~$1$.
+
+\paragraph{Verdict: DEAD.} Ratio $< 0.5$.
+
+\subsection{Variable-constant Cauchy--Schwarz}\label{subsec:variable-cs}
+
+\paragraph{Idea (Z114).}
+Perhaps the Cauchy--Schwarz bound \emph{does} prove Hall, but only at a
+constant $C_{\mathrm{mult}} > 1$ (i.e., with a slightly larger interval
+length $L' = C_{\mathrm{mult}} \cdot L$).  If $C_{\mathrm{crit}}(n) \to 1$
+as $n \to \infty$, this would still prove the upper bound with any~$\eps > 0$.
+
+\paragraph{Computational results (Z114).}
+A $11 \times 10$ grid sweep over $n \in \{2\text{K}, \ldots, 100\text{K}\}$
+and $C_{\mathrm{mult}} \in \{1.00, 1.01, \ldots, 1.50\}$ reveals:
+
+\begin{enumerate}
+\item $C_{\mathrm{crit}}(n) = 1.00$ for $n \leq 7{,}000$ and
+  $C_{\mathrm{crit}}(n) = 1.01$ for $n \geq 10{,}000$.
+  The critical multiplier does \emph{not} decrease toward~$1$.
+\item At fixed $C_{\mathrm{mult}} > 1$, $\CS(T_0)$ \emph{stabilizes}
+  rather than growing:
+  at $C_{\mathrm{mult}} = 1.01$, $\CS(T_0) = 1.001$ at $n = 100{,}000$
+  (approaching~$1$ from above).
+\item The adversarial subset fraction $|T_0|/|V|$ \emph{grows} from
+  $45\%$ to $53\%$ as $n$ increases.
+\end{enumerate}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_variable_constant.pdf}
+\caption{Variable-constant CS: $\CS(T_0)$ vs.~$n$ for six values of
+  $C_{\mathrm{mult}}$.  At $C_{\mathrm{mult}} = 1.00$ (dashed), the
+  ratio oscillates below~$1$.  At larger multipliers, the ratio
+  stabilizes but does not grow.}
+\label{fig:variable-constant}
+\end{figure}
+
+\paragraph{Verdict: DEAD.}
+$C_{\mathrm{crit}}$ does not converge to~$1$.  At $C_{\mathrm{mult}} = 1.01$,
+the CS ratio approaches~$1$ from above and may eventually cross below.
+The variable-constant approach cannot close the gap.

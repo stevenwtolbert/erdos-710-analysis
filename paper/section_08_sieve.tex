@@ -1,0 +1,107 @@
+%% ===================================================================
+\section{Sieve and inclusion-exclusion methods}\label{sec:sieve}
+%% ===================================================================
+
+Sieve methods estimate $|\NH(S)|$ by subtracting the number of targets
+\emph{not} hit by any element of~$S$.  Inclusion-exclusion gives an
+exact formula, but its partial sums (Bonferroni bounds) diverge for
+our graph.
+
+\subsection{Bonferroni bounds (all orders)}\label{subsec:bonferroni}
+
+\paragraph{Method.}
+The exact neighborhood size is
+\[
+  |\NH(S)| = \sum_{h \in H} \mathbf{1}[\tau_S(h) \geq 1]
+  = \sum_{t=1}^{|S|} (-1)^{t+1} \binom{|S|}{t}^{-1}
+    \sum_{T \subseteq S,\, |T|=t} |\NH(T)|.
+\]
+The first-order (union) bound gives $|\NH(S)| \leq E_1$.  The
+second-order Bonferroni bound subtracts pairwise overlaps:
+\[
+  |\NH(S)| \geq E_1 - \textstyle\sum_{k < k'} \deg(k, k')
+  = E_1 - \text{codegree sum}.
+\]
+For this to prove Hall ($|\NH(S)| \geq s$), we need the codegree sum
+$\leq E_1 - s = \text{``excess.''}$
+
+\paragraph{Results (Z07).}
+The Bonferroni bound fails in \emph{all} 80~tested configurations at
+\emph{all} values of~$n$.  The ``waste ratio'' (codegree sum / true overlap)
+ranges from $2.4$ to $9.2$ and \emph{grows} with~$n$:
+
+\begin{center}
+\begin{tabular}{@{}rcc@{}}
+\toprule
+$n$ & min waste ratio & max waste ratio \\
+\midrule
+500 & 2.39 & 5.72 \\
+1{,}000 & 2.32 & 6.61 \\
+2{,}000 & 2.39 & 7.69 \\
+3{,}000 & 3.02 & 8.36 \\
+5{,}000 & 3.11 & 9.22 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Root cause.}
+The codegree sum counts \emph{pairs} sharing a target: if a target~$h$
+has $\tau = \tau_S(h)$ divisors from~$S$, the codegree sum gets
+$\binom{\tau}{2}$, but the true overlap is only $\tau - 1$.  The ratio
+$\binom{\tau}{2} / (\tau - 1) = \tau / 2$ grows with~$\tau$.  Since
+many targets have $\tau \geq 5$--$30$, the Bonferroni bound is
+quadratically wasteful.
+
+Higher-order Bonferroni terms ($t = 3, 4, \ldots$) alternate in sign
+and grow even faster, so the series does not truncate usefully.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Product-formula sieve}\label{subsec:product-sieve}
+
+\paragraph{Method.}
+The independent sieve estimate: the number of targets hit by \emph{no}
+element of~$S$ is approximately
+$\text{sifted} \approx M \cdot \prod_{k \in S}(1 - 1/k) \approx M
+e^{-\sigma}$, where $\sigma = \sum_{k \in S} 1/k$.  Then
+$|\NH(S)| \approx M - M e^{-\sigma} = M(1 - e^{-\sigma})$.
+
+\paragraph{Results (Z08).}
+The actual sifted count is \emph{always larger} than the independent
+estimate (ratio $2$--$300\times$).  The divisibility events $k_1 \mid h$
+and $k_2 \mid h$ are \emph{positively correlated} when $\gcd(k_1, k_2)
+> 1$, so more targets survive sifting than independence predicts.
+The product formula \emph{overestimates} $|\NH(S)|$ and bounds in the
+wrong direction.
+
+\paragraph{Verdict: DEAD.}  Gives upper, not lower, bound.
+
+\subsection{Unique multiple sieve}\label{subsec:unique-sieve}
+
+\paragraph{Method.}
+Show every $k \in S$ has at least one \emph{unique} multiple
+$h \in H$ (with $\tau_S(h) = 1$).  This immediately gives
+$|\NH(S)| \geq |S|$.
+
+\paragraph{Results.}
+Even for top-packed subsets, elements with $d_1(k) = 0$ (no unique
+multiples) appear at $s/N \geq 0.3$.  For adversarial subsets,
+$30$--$90\%$ of elements have no unique multiples.  The elements with
+$d_1 = 0$ are large~$k$ near~$N$ whose few multiples are all shared.
+
+\paragraph{Verdict: DEAD} for general subsets.
+
+\subsection{Standard sieve}\label{subsec:standard-sieve}
+
+\paragraph{Method.}
+Apply the Selberg sieve or Brun sieve to estimate the number of
+integers in~$H$ not divisible by any $k \in S$.
+
+\paragraph{Results.}
+The standard sieve gives a safety factor of $\sim\!3.56$ (the sifted
+count is $3.56\times$ larger than the independent estimate), but in the
+wrong direction: it \emph{overestimates} the sifted count, meaning it
+\emph{underestimates} $|\NH(S)|$.  The sieve's systematic error comes
+from the same positive correlations noted above.
+
+\paragraph{Verdict: DEAD.}

@@ -1,0 +1,120 @@
+%% ===================================================================
+\section{Results from the initial proof attempt}\label{sec:initial}
+%% ===================================================================
+
+Before the systematic investigation documented in
+Sections~\ref{sec:cs-family}--\ref{sec:graph-theoretic}, an initial
+proof attempt (Sessions~1--9) established several structural results
+and identified the core difficulty.  We summarize these here both for
+completeness and because some ideas remain promising.
+
+\subsection{Proof reduction: $U/V$ split and Case~A/B}
+
+The initial attempt established the same proof architecture described
+in Sections~\ref{sec:construction}--\ref{subsec:cs-framework}:
+\begin{enumerate}
+\item Top half~$U$ matched by doubling ($k \mapsto 2k$).
+\item Bottom half~$V$ requires Hall's condition in $G_n = (V, H, E)$.
+\item Case~A ($\min(S) \leq M/(s+1)$) handled by single-element degree.
+\item Case~B ($\min(S) > M/(s+1)$) is the remaining gap.
+\end{enumerate}
+
+Additionally, the initial attempt introduced a finer decomposition
+using a ``smooth set'' $A = \{k \in [cn, n] : P^+(k) \leq B\}$
+with $c = e^{-1/(2u)}$ and proved several structural lemmas
+about~$A$.
+
+\subsection{First-Target Lemma}\label{subsec:first-target}
+
+\begin{proposition}[First-Target Lemma]
+For every $k \notin A$, the smallest multiple
+$m_k = k \cdot \ceil{(n+1)/k} \in (n, n+k]$ is not in $\NH(A)$
+(i.e., no smooth element divides~$m_k$).
+\end{proposition}
+
+This was verified computationally with zero violations for
+$n \leq 50{,}000$.  The proof uses the fact that for $d \in A$ to
+divide~$m_k$, we would need $m_k / d \in (1, 3/(2c))$, but $c > 3/4$
+for large~$n$ forces $3/(2c) < 2$, leaving no integer.
+
+\subsection{Rough exclusion from tight sets}
+
+\begin{proposition}
+If $S^*$ maximizes the deficiency $\text{def}(S) = |S| - |\NH(S)|$,
+then $S^*$ contains no element $k \in [cn, n]$ with $P^+(k) \geq 5$.
+\end{proposition}
+
+The proof uses a ``private target lemma'': removing such~$k$ from~$S^*$
+decreases~$|S^*|$ by~$1$ but decreases~$|\NH(S^*)|$ by at least~$2$
+(since $k$'s targets are exclusive from~$A$), increasing the deficiency
+and contradicting maximality.
+
+\emph{Consequence:} The K\"onig tight set consists entirely of smooth
+numbers. This was confirmed computationally: at the critical
+length $L = f(n) - 1$, the tight set is always 100\% inside~$A$.
+
+\subsection{Shearer entropy bound}\label{subsec:shearer-detail}
+
+The Shearer entropy bound was applied to the bipartite graph and found
+to \emph{never fail}: at every tested~$n$ and every subset type, the
+Shearer bound gives $|\NH(S)| > |S|$.  This contrasts sharply with
+Cauchy--Schwarz, which fails for adversarial subsets.
+
+The Shearer--CS dichotomy (Section~\ref{subsec:shearer-dichotomy}) was
+first observed in the initial attempt and motivated the search for
+alternatives to CS.
+
+\subsection{Three remaining lemmas}
+
+The initial proof attempt identified three lemmas needed to close
+the gap:
+
+\begin{enumerate}
+\item \textbf{Restricted divisor count:} $\tau_S(h) \leq \tau(h; [h/2s, h/5])$
+  (the number of divisors in a restricted range).  \emph{Status: Proved}
+  (Lemma~2 of Section~\ref{sec:construction}).
+
+\item \textbf{Geometric mean bound:} $\prod_{k \in S} \deg(k) \geq
+  \prod_{k \in S} |S|^{1/|S|}$.  \emph{Status: Not needed} (subsumed
+  by the CS framework).
+
+\item \textbf{Shearer combination:} Combine the Shearer entropy bound
+  with the restricted divisor count to get $|\NH(S)| \geq |S|$.
+  \emph{Status: Attempted but not closed} (the analytic estimate of
+  $H(\tau)$ is not tight enough).
+\end{enumerate}
+
+\subsection{Modular remainder and recursive doubling}
+
+Two ``escape hatches'' were explored:
+
+\begin{enumerate}
+\item \textbf{Modular remainder:} If $k \in S$ and $k \equiv r \pmod{p}$
+  for a small prime~$p$, then $k$'s multiples in~$H$ can be partitioned
+  by residue class, potentially giving a private target.
+  \emph{Status: Works for specific elements but does not generalize.}
+
+\item \textbf{Recursive doubling:} Extend the doubling map
+  $k \mapsto 2k$ beyond the top half, matching elements $k \in (n/4, n/2]$
+  to $2k \in (n/2, n]$ if those targets are still available after the
+  first round.  \emph{Status: Does not help because $2k$ may already
+  be claimed.}
+\end{enumerate}
+
+\subsection{Summary}
+
+The initial attempt made significant structural progress:
+\begin{itemize}
+\item The $U/V$ split and Case~A/B decomposition became the standard
+  framework for all subsequent work.
+\item The First-Target Lemma and rough exclusion narrow the search for
+  tight sets to smooth numbers.
+\item The Shearer bound's success (vs.\ CS's failure) highlighted that
+  the problem is not one of ``not enough expansion'' but of ``expansion
+  that is hard to certify.''
+\item The computational verification of Hall's condition for small~$n$
+  provided the foundation for the exhaustive HK campaign.
+\end{itemize}
+
+The core gap---proving Hall for Case~B with large subsets---remained
+open and motivated the 43-approach investigation documented in this paper.

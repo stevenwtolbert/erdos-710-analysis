@@ -1,0 +1,157 @@
+%% ===================================================================
+\section{The critical gap}\label{sec:gap}
+%% ===================================================================
+
+The central negative result of our investigation is that no analytic
+argument we have found can bridge the gap between per-interval Hall's
+condition (proved in Section~\ref{subsec:per-interval-cs}) and global
+Hall's condition.  This section characterizes the gap precisely.
+
+\subsection{Per-interval Hall does not imply global Hall}\label{subsec:gap-statement}
+
+Let $I_1, \ldots, I_J$ be the dyadic intervals partitioning~$V$.
+Per-interval Hall states that $|\NH(S \cap I_j)| \geq |S \cap I_j|$
+for each~$j$.  The naive attempt to globalize is:
+\begin{align*}
+  |\NH(S)| &= \Bigl|\bigcup_j \NH(S \cap I_j)\Bigr| \\
+  &\geq \sum_j |\NH(S \cap I_j)| - \text{overlaps}
+  \;\geq\; |S| - \text{overlaps}.
+\end{align*}
+This works only if the overlap is zero.  In practice, the overlap is enormous.
+
+\subsection{Cross-interval overlap}\label{subsec:overlap}
+
+\begin{observation}[Z29a]\label{obs:overlap}
+Adjacent dyadic intervals share $87$--$93\%$ of their targets.
+Non-adjacent intervals share similarly.  At $n = 50{,}000$, the total
+pairwise overlap exceeds the total surplus by a factor of~$3.3$.
+\end{observation}
+
+The data from Z29:
+
+\begin{center}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$n$ & intervals & $|V|$ & surplus & overlap & margin \\
+\midrule
+1{,}000 & 4 & 268 & 619 & 998 & $-379$ \\
+5{,}000 & 5 & 1{,}373 & 5{,}059 & 11{,}269 & $-6{,}211$ \\
+10{,}000 & 6 & 2{,}695 & 12{,}296 & 32{,}243 & $-19{,}947$ \\
+50{,}000 & 7 & 13{,}001 & 76{,}395 & 253{,}043 & $-176{,}648$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Here ``surplus'' is $\sum_j (|\NH(I_j)| - |I_j|)$, ``overlap'' is
+$\sum_{j < j'} |\NH(I_j) \cap \NH(I_{j'})|$, and ``margin'' is
+surplus~$-$~overlap.  The margin is \emph{deeply negative} and worsening
+with~$n$.
+
+\subsection{Target multiplicity}\label{subsec:multiplicity}
+
+\begin{observation}[Z29b]\label{obs:multiplicity}
+Most targets are shared by multiple intervals.  At $n = 50{,}000$:
+$\mu_{\max} = 7$ (equal to the number of intervals), $\mu_{\mathrm{avg}}
+= 4.74$, and only $5.3\%$ of targets are unique to one interval.
+\end{observation}
+
+A ``max-multiplicity'' bridge argument would require
+$\min_j \alpha_j \geq \mu_{\max} \approx \frac{1}{4}\log_2 n$.
+Since $\min_j \alpha_j \approx 1.7$--$2.7$ at tested values of~$n$,
+this approach fails by an order of magnitude.
+
+\subsection{Global Cauchy--Schwarz failure}\label{subsec:global-cs}
+
+\begin{observation}[Z112g, Z113b, Z114]\label{obs:global-cs}
+The global Cauchy--Schwarz ratio $\CS(S) = E_1^2 / (|S| \cdot E_2)$ falls
+below~$1$ for adversarial subsets~$S$ at all tested $n \geq 10{,}000$.
+\end{observation}
+
+The data from Z114 at the base constant $C = 2/\sqrt{e}$ (with
+$\eps = 0.05$, $C_{\mathrm{mult}} = 1.00$):
+
+\begin{center}
+\begin{tabular}{@{}rcc@{}}
+\toprule
+$n$ & $\CS(T_0)$ & $|T_0|/|V|$ \\
+\midrule
+2{,}000 & 1.027 & 45.4\% \\
+5{,}000 & 1.032 & 47.3\% \\
+7{,}000 & 1.005 & 48.1\% \\
+10{,}000 & \textbf{0.991} & 48.9\% \\
+20{,}000 & \textbf{0.992} & 50.3\% \\
+50{,}000 & \textbf{0.998} & 52.0\% \\
+100{,}000 & \textbf{0.988} & 53.1\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Bold entries are below~$1$: the Cauchy--Schwarz bound \emph{does not}
+prove Hall's condition for these subsets.  The values oscillate around~$1.0$
+without converging in either direction (see Section~\ref{sec:phenomena}
+on the oscillation phenomenon).
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_global_cs_oscillation.pdf}
+\caption{Top: global Cauchy--Schwarz ratio $\CS(T_0)$ for the
+  adversarial subset at the base constant, oscillating around the
+  threshold~$1$.  Bottom: the fraction $|T_0|/|V|$ of vertices in the
+  adversarial subset, growing from $45\%$ to $53\%$.}
+\label{fig:cs-oscillation}
+\end{figure}
+
+\subsection{The K\"onig deficient set}\label{subsec:konig}
+
+The adversarial subset~$T_0$ achieving the minimum CS ratio has a
+distinctive structure:
+
+\begin{observation}\label{obs:konig}
+The greedy-adversarial subset~$T_0$ spans approximately $48$--$53\%$ of
+all vertices in~$V$, drawn from \emph{all} dyadic intervals at roughly
+$60\%$ density per interval, and from \emph{all} degree classes.
+\end{observation}
+
+This is the core difficulty: the worst-case subset is not localized to
+a single interval or degree band---it is a diffuse, structured set that
+exploits the entire graph.
+
+\subsection{The expansion ratio}\label{subsec:expansion}
+
+\begin{observation}[Z112n]\label{obs:expansion}
+The greedy-adversarial lower bound on the expansion ratio
+$\alpha(V) = \min_{\emptyset \neq S \subseteq V} |\NH(S)| / |S|$
+lies in the interval $(1.00, 1.25)$ for all tested $n \geq 3{,}000$.
+The true minimum may be lower (the greedy heuristic does not
+find the worst-case subset), but the exhaustive HK verification
+confirms $\alpha(V) \geq 1$ for all $n \leq 10^6$.
+\end{observation}
+
+This razor-thin margin---expansion barely exceeding~$1$---is why every
+approach fails.  A proof must establish $\alpha(V) \geq 1$ for all~$n$,
+but the margin leaves no room for the $O(1)$ errors inherent in
+asymptotic arguments.
+
+\subsection{Why the gap persists}\label{subsec:why-gap}
+
+The situation can be summarized as a trilemma:
+
+\begin{enumerate}
+\item \textbf{Per-interval analysis is too local.}
+  Each interval sees strong expansion ($\CS \to \infty$), but combining
+  intervals destroys the guarantee because neighborhoods overlap massively.
+
+\item \textbf{Global analysis is too weak.}
+  The global Cauchy--Schwarz bound oscillates around~$1.0$ for adversarial
+  subsets, dipping to $\sim\!0.988$ at some values of~$n$---tantalizingly
+  close to~$1$ but on the wrong side.
+
+\item \textbf{Partition-based methods need $\alpha(V_{\mathrm{rest}}) \geq 2$.}
+  The FMC theorem reduces the problem to bounding the expansion ratio
+  of each block.  The $V_{\min}$ block is handled, but no analytic argument
+  proves $\alpha(V_{\mathrm{rest}}) \geq 2$, even though the greedy
+  heuristic gives $\alpha(V_{\mathrm{rest}}) \geq 2.3$ at all tested~$n$.
+\end{enumerate}
+
+The remainder of this paper catalogs 43~approaches that attempt to
+resolve this trilemma, organized by technique.

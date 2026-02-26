@@ -1,0 +1,155 @@
+%% ===================================================================
+\section{Introduction}\label{sec:intro}
+%% ===================================================================
+
+\subsection{The problem}
+
+For a positive integer~$n$, define $f(n)$ to be the minimum $L \in \mathbb{Z}_{>0}$
+such that there exists an injection
+$\varphi\colon \{1,\ldots,n\} \to (n,\, n+L] \cap \mathbb{Z}$
+with $k \mid \varphi(k)$ for all~$k$.
+Thus $f(n)$ is the length of the shortest interval $(n, n+L]$ admitting
+a \emph{divisible injection} from~$\{1,\ldots,n\}$.
+This function was studied by Erd\H{o}s and
+Pomerance~\cite{ErdosPomerance1980}, and its asymptotic determination
+appears as Problem~\#710 on the Erd\H{o}s problems
+database~\cite{Erdos1990,Guy2004}.
+The requirement $\varphi(k) > n$ ensures that $\varphi(k) \neq k$, and
+$k \mid \varphi(k)$ constrains each image to lie among the multiples of~$k$
+that exceed~$n$.
+
+The problem sits at the intersection of multiplicative number theory, extremal
+combinatorics, and the anatomy of integers. It asks: how densely can we pack
+the integers $1,\ldots,n$ into a short interval above~$n$, with each integer
+assigned to one of its own multiples?
+
+\subsection{History and prior work}\label{subsec:history}
+
+The problem has its roots in Erd\H{o}s's 1938 Tomsk paper~\cite{Erdos1938}, which
+introduced \emph{$2$-primitive sets}---sets where no element divides the product
+of two distinct others---and established foundational density estimates.
+The Erd\H{o}s--S\'ark\"ozy--Szemer\'edi collaboration~\cite{ErdosSarkozy1966}
+produced a series of at least ten papers on divisibility properties of integer
+sequences through the 1960s--70s, culminating in precise characterizations
+of extremal sets.
+
+The specific function~$f(n)$ and its asymptotic behavior were studied by
+Erd\H{o}s and Pomerance~\cite{ErdosPomerance1980}, who established the lower bound
+\begin{equation}\label{eq:lower-bound}
+  f(n) \;\geq\; \left(\frac{2}{\sqrt{e}} - o(1)\right)
+  n\sqrt{\frac{\ln n}{\ln\ln n}}.
+\end{equation}
+Their argument counts the available multiples of~$k$ in short intervals and shows
+that no interval shorter than the right-hand side
+of~\eqref{eq:lower-bound} can accommodate a divisible injection.
+The constant $2/\sqrt{e} \approx 1.2131$ arises from optimizing over the
+``smooth number'' parameter: elements~$k$ whose largest prime factor
+$P(k) \leq k^{1/u}$ (with $u = \sqrt{\ln n / \ln\ln n}$) are the bottleneck,
+and the Dickman function~$\rho(u)$ governs their density.
+
+Erd\H{o}s and Pomerance also established the best known upper bound:
+\begin{equation}\label{eq:known-upper}
+  f(n) \;\leq\; (1.7398\cdots + o(1))\, n\sqrt{\ln n}.
+\end{equation}
+Note the absence of the $\ln\ln n$ correction: the upper
+bound~\eqref{eq:known-upper} exceeds the conjectured
+answer~\eqref{eq:lower-bound} by a factor of~$\sqrt{\ln\ln n}$,
+which diverges (albeit slowly).  Closing this gap---proving the matching
+upper bound
+\begin{equation}\label{eq:upper-bound}
+  f(n) \;\leq\; \left(\frac{2}{\sqrt{e}} + o(1)\right)
+  n\sqrt{\frac{\ln n}{\ln\ln n}}
+\end{equation}
+and thereby determining $f(n)$ asymptotically---has remained open
+since~1980. The problem appears in Guy's \emph{Unsolved Problems in
+Number Theory}~\cite{Guy2004} (Sections~C9 and~C10) and carries
+a \$500 prize on \texttt{erdosproblems.com}.
+
+\subsection{Our contribution}
+
+This paper does not prove~\eqref{eq:upper-bound}. Instead, we report on an
+extensive investigation---both computational and analytic---that:
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Verifies computationally} that the upper bound holds for
+  all $n \leq 10^6$, via exhaustive Hopcroft--Karp maximum bipartite matching
+  with zero failures (Section~\ref{sec:proved});
+\item \textbf{Proves partial results:} per-interval Hall's condition via
+  Cauchy--Schwarz, the $V_{\min}$ disjointness lemma, the FMC theorem, and
+  the small-$s$ regime (Section~\ref{sec:proved});
+\item \textbf{Documents 43~distinct analytic approaches} to closing the gap
+  between per-interval and global Hall's condition, each of which fails for
+  identifiable structural reasons
+  (Sections~\ref{sec:cs-family}--\ref{sec:graph-theoretic});
+\item \textbf{Identifies the precise obstruction:} the worst-case
+  subset~$T^*$ spans~$\sim\!48$--$53\%$ of all vertices, drawn from
+  every dyadic interval at $\sim\!60\%$ density, with the global
+  expansion ratio $\alpha(V) = \min_{S} |\NH(S)|/|S|$ barely
+  exceeding~$1$ (Section~\ref{sec:gap});
+\item \textbf{Catalogs interesting computational phenomena}---sawtooth
+  oscillations, phase transitions, the Shearer--CS dichotomy---that may
+  guide future work (Section~\ref{sec:phenomena}).
+\end{enumerate}
+
+The spirit of this paper is that of a detailed postmortem
+of a prolonged research effort, written so that future researchers need not
+repeat the same dead ends. We believe the negative results are themselves
+valuable, both for the structural insight they provide and for the sharp
+quantitative bounds on where each approach breaks.
+
+\subsection{Why the problem is hard}\label{subsec:why-hard}
+
+The fundamental difficulty can be stated in a single sentence:
+
+\begin{quote}
+\emph{The bipartite graph $G_n = (V, H, E)$ has per-interval expansion
+$\gg 1$ but global expansion ratio barely exceeding~$1$, and no
+known analytic method can certify that the expansion ratio remains
+above~$1$ as $n \to \infty$.}
+\end{quote}
+
+More precisely:
+\begin{itemize}
+\item Within each dyadic interval $I_j = \{k \in V : 2^{j-1} < k \leq 2^j\}$,
+  the Cauchy--Schwarz bound proves $|\NH(S \cap I_j)| \geq C_j |S \cap I_j|$
+  with $C_j \to \infty$ as $n \to \infty$.
+\item But the neighborhoods $\NH(S \cap I_j)$ overlap by~87--93\% across
+  different intervals~$I_j$, so summing the per-interval guarantees
+  \emph{double-counts} the same targets.
+\item The global Cauchy--Schwarz ratio $E_1^2 / (|S| \cdot E_2)$ oscillates
+  around~$1.0$ for adversarial subsets~$S$, falling as low as $\sim\!0.988$
+  at some values of~$n$---below the threshold needed for Hall's condition.
+\item The worst-case K\"onig deficient set spans \emph{all} intervals at
+  $\sim\!60\%$ density per interval and \emph{all} degree classes,
+  defeating any partition-based strategy.
+\end{itemize}
+
+The root cause is that the minimum degree~$\delta \approx 2M/n - 1$ is small
+(growing only as $\sqrt{\ln n / \ln\ln n}$), and for vertices~$k$ near~$n/2$,
+the degree~$d(k) \approx \delta$ is comparable to the maximum codegree~$D_2$.
+This means $D/D_2 \not\to \infty$, which is precisely the regime where
+probabilistic methods (LLL, nibble, Janson) and algebraic methods (spectral
+gap) lose their power.
+
+\subsection{Paper organization}
+
+\begin{itemize}
+\item Section~\ref{sec:construction}: The bipartite graph construction and
+  its degree structure.
+\item Section~\ref{sec:proved}: What is proved---HK verification, per-interval
+  CS, $V_{\min}$ disjointness, FMC theorem.
+\item Section~\ref{sec:gap}: The critical gap between per-interval and global
+  Hall's condition.
+\item Section~\ref{sec:cs-family}: The Cauchy--Schwarz family (6+ variants).
+\item Section~\ref{sec:matching}: Matching and fractional methods (8+ variants).
+\item Section~\ref{sec:probabilistic}: Probabilistic methods (LLL, Janson,
+  nibble).
+\item Section~\ref{sec:sieve}: Sieve and inclusion-exclusion methods.
+\item Section~\ref{sec:graph-theoretic}: Graph-theoretic and spectral methods.
+\item Section~\ref{sec:phenomena}: Interesting computational phenomena.
+\item Section~\ref{sec:initial}: Results from the initial proof attempt.
+\item Section~\ref{sec:conclusion}: Conclusion---where the snakes lie.
+\end{itemize}
+
+All computational experiments are reproducible from scripts included in the
+\texttt{experiments/} directory of the accompanying code repository. Every
+claim in this paper is traced to a specific verification script or state file.

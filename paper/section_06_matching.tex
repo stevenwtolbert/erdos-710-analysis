@@ -1,0 +1,201 @@
+%% ===================================================================
+\section{Matching and fractional methods}\label{sec:matching}
+%% ===================================================================
+
+This section documents eight approaches based on constructing matchings
+(exact or fractional) in the bipartite graph~$G_n$.  The common theme:
+matchings exist (HK confirms this), but no constructive or
+fractional argument can \emph{prove} existence for all~$n$.
+
+\subsection{Greedy matching}\label{subsec:greedy}
+
+\paragraph{Method.}
+Match elements in order of increasing degree (hardest first).  Each
+element~$k$ is assigned to its available multiple with smallest
+$\tau_S(m)$ (least contested).
+
+\paragraph{Results.}
+Greedy matching fails in 112 out of 220 tested configurations:
+
+\begin{center}
+\begin{tabular}{@{}rccc@{}}
+\toprule
+$n$ & tests & failures & failure rate \\
+\midrule
+500 & 55 & 20 & 36\% \\
+1{,}000 & 55 & 24 & 44\% \\
+2{,}000 & 55 & 33 & 60\% \\
+3{,}000 & 55 & 35 & 64\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Why it fails.}
+Elements with degree~$\sim\!3$--$8$ (e.g., $k = 98 = 2 \cdot 7^2$,
+$k = 81 = 3^4$) get stuck because \emph{all} their multiples were
+claimed by previously matched degree-$2$ elements.  The greedy makes
+locally optimal but globally suboptimal choices.  The failure rate
+\emph{grows} with~$n$.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Uniform fractional matching}\label{subsec:uniform-frac}
+
+\paragraph{Method.}
+Assign weight $x_{k,h} = 1/\tau_S(h)$ to each edge.  The right-side
+constraint $\sum_k x_{k,h} = 1$ is automatic.  If the left-side weight
+$w(k) = \sum_{h:\, k \mid h} 1/\tau_S(h) \geq 1$ for all~$k$, then
+Birkhoff--von~Neumann integrality gives a perfect matching.
+
+\paragraph{Results.}
+The condition $w(k) \geq 1$ for all~$k$ is \textbf{false}.  The
+minimum $w(k)$ ranges from $0.057$ to $0.087$---far below~$1$.
+The worst element~$k^*$ is always a highly composite number near~$N$
+with $\deg(k^*) \approx \de \approx 2$--$3$ and all multiples having
+$\tau_S(h) \gg 20$.  The uniform weight $1/\tau_S(h)$ starves
+large elements: $w(k^*) \approx \deg / \bar{\tau} \approx 2/30
+\approx 0.07$.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{Nonuniform fractional matching}\label{subsec:nonuniform-frac}
+
+\paragraph{Method.}
+Solve the LP: find $x_{k,h} \geq 0$ with $\sum_h x_{k,h} \geq 1$
+for all~$k$ and $\sum_k x_{k,h} \leq 1$ for all~$h$.  This always
+has an optimal solution (since a perfect matching exists), but the
+fractional load $\max_h \sum_k x_{k,h}$ may hover near~$1.0$.
+
+\paragraph{Results.}
+LP-optimal fractional matchings exist with $\max$ load $= 1.0$
+(tight).  However, the dual LP reveals that the bottleneck elements
+are exactly the min-degree vertices near~$N$, and the fractional
+solution routes flow through heavily shared targets---reflecting the
+same structural difficulty.
+
+\paragraph{Verdict: DEAD} as a proof technique (existence of LP
+optimum does not constitute a Hall proof for all~$n$).
+
+\subsection{FMC with dyadic intervals}\label{subsec:fmc-dyadic}
+
+\paragraph{Method.}
+Partition $V$ into $J \approx \frac{1}{2}\log_2 n$ dyadic intervals
+and apply the FMC theorem (Theorem~\ref{thm:fmc}).
+
+\paragraph{Results (Z99).}
+The FMC sum $\Sigma = \sum_j 1/\alpha_j$ is:
+
+\begin{center}
+\begin{tabular}{@{}rcc@{}}
+\toprule
+$n$ & $\Sigma$ (greedy) & Status \\
+\midrule
+500 & 1.109 & FAIL \\
+1{,}000 & 1.154 & FAIL \\
+5{,}000 & 1.071 & FAIL \\
+10{,}000 & 1.016 & FAIL \\
+20{,}000 & 0.917 & OK \\
+50{,}000 & 0.755 & OK \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The FMC sum (using greedy $\alpha_j$) crosses below~$1$ at
+$n \approx 15{,}000$--$20{,}000$.  The CS-based overestimate
+$\sum 1/\CS_j$ is consistently larger than the greedy-based sum
+$\sum 1/\alpha_j$, illustrating that CS underestimates
+the true expansion within intervals.
+
+\paragraph{Why it fails for small $n$.}
+The bottom interval (vertices near~$N$) has $\alpha_j \approx d_{\min}
+\approx 3$, contributing $\sim\!0.33$ to the FMC sum.  With
+$J \approx 7$--$10$ intervals, even small contributions from other
+intervals push the total above~$1$.
+
+\paragraph{Verdict: DEAD} for $n \lesssim 15{,}000$; works computationally
+but not provably for larger~$n$.
+
+\subsection{Three-block FMC}\label{subsec:three-block}
+
+\paragraph{Method (Z103).}
+Partition $V = R \cup S_+ \cup S_-$ where $R$ = rough numbers ($P(k) > B$),
+$S_+ = \{k > B : P(k) \leq B\}$ (smooth, large), and $S_- = \{1,\ldots,B\}$
+(smooth, small).  The three-block FMC needs
+$1/\alpha(R) + 1/\alpha(S_+) + 1/\alpha(S_-) < 1$.
+
+\paragraph{Results (Z103b).}
+
+\begin{center}
+\begin{tabular}{@{}rccccl@{}}
+\toprule
+$n$ & $\alpha(R)$ & $\alpha(S_+)$ & $\alpha(S_-)$ & FMC & Status \\
+\midrule
+1{,}000 & 2.00 & 1.31 & 27.3 & 1.302 & FAIL \\
+5{,}000 & 2.40 & 1.59 & 75.4 & 1.059 & FAIL \\
+10{,}000 & 2.50 & 2.30 & 117.9 & 0.843 & OK \\
+50{,}000 & 3.00 & 3.00 & 350.9 & 0.670 & OK \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The three-block approach improves over dyadic (crossover at $n \approx
+10{,}000$ vs $20{,}000$), but $\alpha(S_+)$ remains unproved analytically.
+The greedy heuristic overestimates $\alpha$ by 10--15\%, so the true crossover
+may be later.
+
+\paragraph{Verdict: DEAD} without an analytic bound on $\alpha(S_+)$.
+
+\subsection{Sinkhorn iteration}\label{subsec:sinkhorn}
+
+\paragraph{Method.}
+Apply Sinkhorn's algorithm (alternating row/column normalization) to the
+biadjacency matrix to find a doubly stochastic scaling.  If the scaling
+converges, Birkhoff's theorem guarantees a perfect matching.
+
+\paragraph{Results (Z113c).}
+Sinkhorn converges, but the fractional deficiency (deviation from doubly
+stochastic) is 13--15\%.  The minimum row sum after $1{,}000$ iterations
+is $0.85$--$0.87$, not reaching~$1$.  The bottleneck is again the
+min-degree vertices near~$N$.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{CLP factoring}\label{subsec:clp}
+
+\paragraph{Method (Z113c).}
+Factor the bipartite graph into perfect matchings via the constructive
+Lov\'asz--Plummer algorithm.  If $G_n$ has a decomposition into~$\de$
+edge-disjoint perfect matchings, the first one suffices.
+
+\paragraph{Results.}
+$G_n$ is not regular ($\deg(k)$ varies from~$\de$ to~$M$), so direct
+factoring fails.  Even after truncating to the $\de$-regular subgraph
+(keeping only $\de$ edges per vertex), the resulting graph is not
+bipartite-regular and does not decompose cleanly.
+
+\paragraph{Verdict: DEAD.}
+
+\subsection{$\sqrt{2}$-partition sequential matching}\label{subsec:sqrt2}
+
+\paragraph{Method (Z31g).}
+Partition $V$ using ratio $\sqrt{2}$ (intervals $[c^j, c^{j+1})$ with
+$c = \sqrt{2}$) instead of ratio~$2$.  Within each finer interval, the
+local degree condition $\min_{k \in I_j} \deg(k) \geq
+\max_{h \in \NH(I_j)} |\{k \in I_j : k \mid h\}|$ holds, enabling
+sequential matching interval by interval.
+
+\paragraph{Results.}
+At every tested~$n$ up to $200{,}000$, the $\sqrt{2}$-partition satisfies
+the local degree condition in every interval (worst ratio $= 1.00$).
+The number of intervals grows from~$7$ to~$14$.
+
+\paragraph{Why it fails as a proof.}
+Sequential matching across intervals requires that targets used by
+earlier intervals remain available for later intervals.  The 87--93\%
+overlap means most targets are shared across intervals, and there is no
+guarantee that a greedy interval-by-interval approach leaves enough
+targets for subsequent intervals.  This is the same globalization
+barrier as in Section~\ref{subsec:per-interval-cs-detail}.
+
+\paragraph{Verdict: DEAD} for the global argument; the local condition
+passes everywhere.

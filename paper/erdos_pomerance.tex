@@ -1,0 +1,178 @@
+\documentclass[12pt]{amsart}
+
+%%% Packages
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage[colorlinks=true,citecolor=blue,urlcolor=blue,linkcolor=blue]{hyperref}
+
+%%% Fix overflow: allow generous line breaking
+\emergencystretch=1.5em
+\sloppy
+
+%%% Figures path
+\graphicspath{{../../experiments/figures/}}
+
+%%% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{observation}[theorem]{Observation}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+%%% Math operators and macros
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\CS}{CS}
+\DeclareMathOperator{\FMC}{FMC}
+\newcommand{\NH}{N_H}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\norm}[1]{\left\| #1 \right\|}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\de}{\delta}
+
+\subjclass[2020]{11B83, 05C70, 11N25, 05D15}
+
+\keywords{Erd\H{o}s Problem 710, divisible injection, Hall's marriage theorem,
+  Cauchy--Schwarz, bipartite matching, smooth numbers}
+
+\title[Approaches to Erd\H{o}s--Pomerance]{Computational and analytic approaches to the Erd\H{o}s--Pomerance divisible injection problem}
+
+\author{Steven Tolbert}
+
+\date{February 2026}
+
+\begin{document}
+
+\begin{abstract}
+We report on an extensive computational and analytic investigation of
+Erd\H{o}s Problem~\#710: determine $f(n)$, the minimum length~$L$ such that
+there exists an injection $\varphi\colon \{1,\ldots,n\}\to (n,n+L]\cap\mathbb{Z}$
+with $k\mid\varphi(k)$ for all~$k$. The conjectured answer is
+$f(n) = (2/\sqrt{e}+o(1))\,n\sqrt{\ln n/\ln\ln n}$, where the lower bound
+is due to Erd\H{o}s and Pomerance. We verify computationally that the
+matching upper bound holds for all $n\le 10^6$ via exhaustive
+Hopcroft--Karp matching with zero failures. For the analytic regime
+$n\to\infty$, we document 43~distinct approaches---including Cauchy--Schwarz
+variants, fractional matching, the Lov\'asz Local Lemma, spectral methods,
+sieve bounds, semi-random nibble, and graph-theoretic techniques---each of
+which fails to close the gap between per-interval Hall verification and
+global Hall's condition. We identify the precise structural obstruction:
+the worst-case subset~$T^*$ spans approximately~48--53\% of vertices,
+drawn from \emph{all} dyadic intervals at roughly~60\% density per interval,
+with expansion ratio barely exceeding~$1$.
+We catalog every approach, its failure mechanism, and the computational
+evidence, with the aim of guiding future work on this long-standing open
+problem.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+%% ============================================================
+\input{section_01_introduction}
+\input{section_02_construction}
+\input{section_03_proved}
+\input{section_04_gap}
+\input{section_05_cauchy_schwarz}
+\input{section_06_matching}
+\input{section_07_probabilistic}
+\input{section_08_sieve}
+\input{section_09_graph_theoretic}
+\input{section_10_phenomena}
+\input{section_11_initial_attempt}
+\input{section_12_conclusion}
+
+%% ============================================================
+%% Bibliography
+%% ============================================================
+\begin{thebibliography}{99}
+
+\bibitem{Erdos1938}
+P.~Erd\H{o}s, On sequences of integers no one of which divides the product
+of two others and on some related problems,
+\emph{Mitt.\ Forsch.-Inst.\ Math.\ Mech.\ Univ.\ Tomsk} \textbf{2} (1938), 74--82.
+
+\bibitem{ErdosPomerance1980}
+P.~Erd\H{o}s and C.~Pomerance,
+Matching the natural numbers up to~$n$ with distinct multiples in another interval,
+\emph{Nederl.\ Akad.\ Wetensch.\ Proc.\ Ser.~A} \textbf{83} (1980), 147--161.
+
+\bibitem{ErdosSarkozy1966}
+P.~Erd\H{o}s, A.~S\'ark\"ozy, and E.~Szemer\'edi,
+On divisibility properties of sequences of integers,
+\emph{Studia Sci.\ Math.\ Hungar.} \textbf{1} (1966), 431--435.
+
+\bibitem{Hall1935}
+P.~Hall, On representatives of subsets,
+\emph{J.\ London Math.\ Soc.} \textbf{10} (1935), 26--30.
+
+\bibitem{HopcroftKarp1973}
+J.\,E.~Hopcroft and R.\,M.~Karp,
+An $n^{5/2}$ algorithm for maximum matchings in bipartite graphs,
+\emph{SIAM J.\ Comput.} \textbf{2}(4) (1973), 225--231.
+
+\bibitem{Ford2008}
+K.~Ford, The distribution of integers with a divisor in a given interval,
+\emph{Ann.\ of Math.} (2) \textbf{168} (2008), 367--433.
+
+\bibitem{KoukoulopoulosMaynard2020}
+D.~Koukoulopoulos and J.~Maynard,
+On the Duffin--Schaeffer conjecture,
+\emph{Ann.\ of Math.} (2) \textbf{192} (2020), 251--307.
+
+\bibitem{HildebrandTenenbaum1993}
+A.~Hildebrand and G.~Tenenbaum,
+Integers without large prime factors,
+\emph{J.\ Th\'eor.\ Nombres Bordeaux} \textbf{5} (1993), 411--484.
+
+\bibitem{Rodl1985}
+V.~R\"odl, On a packing and covering problem,
+\emph{European J.\ Combin.} \textbf{6} (1985), 69--78.
+
+\bibitem{MolloyReed2002}
+M.~Molloy and B.~Reed,
+\emph{Graph Colouring and the Probabilistic Method},
+Springer, Algorithms and Combinatorics~23, 2002.
+
+\bibitem{Haxell1995}
+P.\,E.~Haxell, A condition for matchability in hypergraphs,
+\emph{Graphs Combin.} \textbf{11} (1995), 245--248.
+
+\bibitem{ErdosSpencer1991}
+P.~Erd\H{o}s and J.~Spencer,
+Lopsided Lov\'asz Local Lemma and Latin transversals,
+\emph{Discrete Appl.\ Math.} \textbf{30} (1991), 151--154.
+
+\bibitem{Janson1998}
+S.~Janson, New versions of Suen's correlation inequality,
+\emph{Random Structures Algorithms} \textbf{13} (1998), 467--483.
+
+\bibitem{Erdos1990}
+P.~Erd\H{o}s, Some of my favourite unsolved problems,
+in \emph{A Tribute to Paul Erd\H{o}s} (A.~Baker, B.~Bollob\'as,
+A.~Hajnal, eds.), Cambridge University Press, 1990, pp.~467--478.
+
+\bibitem{Guy2004}
+R.\,K.~Guy, \emph{Unsolved Problems in Number Theory}, 3rd~ed.,
+Springer, 2004.
+
+\end{thebibliography}
+
+\end{document}
